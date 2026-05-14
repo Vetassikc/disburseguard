@@ -97,5 +97,5 @@ pnpm db:migrate
 Use this local-only development value:
 
 ```env
-DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:5432/disburseguard
+DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:55432/disburseguard
 ```

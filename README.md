@@ -38,7 +38,7 @@ pnpm db:migrate
 Then set this local-only value in `.env.local`:
 
 ```env
-DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:5432/disburseguard
+DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:55432/disburseguard
 ```
 
 The `disburseguard-local` password is only a development credential for the local Docker database. Use a strong unique value on Vultr.
