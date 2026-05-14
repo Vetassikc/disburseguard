@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: disburseguard
+      POSTGRES_USER: disburseguard
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U disburseguard -d disburseguard"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://disburseguard:${POSTGRES_PASSWORD}@postgres:5432/disburseguard
+      GEMINI_MODE: ${GEMINI_MODE:-fixture}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      X402_LIVE_SETTLEMENT: ${X402_LIVE_SETTLEMENT:-false}
+      SIGNING_PRIVATE_KEY_HEX: ${SIGNING_PRIVATE_KEY_HEX:-}
+    command: sh -c "pnpm db:migrate && pnpm start"
+
+volumes:
+  postgres-data:
