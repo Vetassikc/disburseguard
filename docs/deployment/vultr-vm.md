@@ -84,3 +84,18 @@ The unpaid proof request should return HTTP 402. The clearance run should return
 ## Cost control
 
 For Vultr billing safety, destroy the instance when you no longer need it. Stopped instances can still be billed.
+
+## Local rehearsal
+
+Before using Vultr, rehearse the ledger path locally:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+pnpm db:migrate
+```
+
+Use this local-only development value:
+
+```env
+DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:5432/disburseguard
+```

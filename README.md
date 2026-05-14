@@ -28,6 +28,21 @@ pnpm dev
 
 Open `http://127.0.0.1:3000/demo`.
 
+For a production-like local ledger, run PostgreSQL with Docker:
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+pnpm db:migrate
+```
+
+Then set this local-only value in `.env.local`:
+
+```env
+DATABASE_URL=postgres://disburseguard:disburseguard-local@127.0.0.1:5432/disburseguard
+```
+
+The `disburseguard-local` password is only a development credential for the local Docker database. Use a strong unique value on Vultr.
+
 ## Deployment
 
 The Vultr VM deployment path is documented in [docs/deployment/vultr-vm.md](docs/deployment/vultr-vm.md). It uses Docker Compose to run the Next.js app and PostgreSQL on one small VM for the hackathon demo.

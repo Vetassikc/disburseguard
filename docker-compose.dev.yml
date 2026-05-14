@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: disburseguard
+      POSTGRES_USER: disburseguard
+      POSTGRES_PASSWORD: disburseguard-local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U disburseguard -d disburseguard"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres-dev-data:
