@@ -23,7 +23,7 @@ export const payoutIntentSchema = z.object({
 });
 
 export const extractionResultSchema = z.object({
-  mode: z.enum(["live-gemini", "fixture-fallback"]),
+  mode: z.enum(["live-gemini", "openrouter-gemini", "fixture-fallback"]),
   model: z.string(),
   confidence: z.number().min(0).max(1),
   fields: z.object({
@@ -44,7 +44,7 @@ export const proofPlanSchema = z.object({
   id: z.string(),
   clearanceId: z.string(),
   generatedBy: z.string(),
-  mode: z.enum(["live-gemini", "fixture-fallback"]),
+  mode: z.enum(["live-gemini", "openrouter-gemini", "fixture-fallback"]),
   steps: z.array(
     z.object({
       provider: z.string(),

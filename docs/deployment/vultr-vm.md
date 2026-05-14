@@ -40,8 +40,11 @@ Required values:
 
 - `POSTGRES_PASSWORD`: long random password.
 - `SIGNING_PRIVATE_KEY_HEX`: 64 hex characters. Generate with `openssl rand -hex 32`.
-- `GEMINI_MODE`: use `fixture` for deterministic judging, or `live` when `GEMINI_API_KEY` is set.
+- `GEMINI_MODE`: use `fixture` for deterministic judging, `live` when `GEMINI_API_KEY` is set, or `openrouter` when routing Gemini extraction through OpenRouter.
 - `GEMINI_API_KEY`: Gemini API key, only if live mode is enabled.
+- `OPENROUTER_API_KEY`: OpenRouter key, only if `GEMINI_MODE=openrouter`.
+- `OPENROUTER_MODEL`: default `google/gemini-2.5-flash`.
+- `OPENROUTER_SITE_URL`: public demo URL once deployed.
 
 Start the app:
 

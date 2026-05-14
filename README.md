@@ -15,7 +15,7 @@ DisburseGuard is a clean-room hackathon implementation of a proof-paid treasury 
 ## Sponsor Usage
 
 - **x402 Payments:** the proof endpoint is protected by an HTTP 402-style payment gate. The deterministic fallback preserves resource, quote, receipt, and hash semantics without storing wallet keys.
-- **Gemini:** extraction defaults to clearly labeled fixture fallback. Set `GEMINI_MODE=live` and `GEMINI_API_KEY` to enable live extraction.
+- **Gemini:** extraction defaults to clearly labeled fixture fallback. Set `GEMINI_MODE=live` and `GEMINI_API_KEY` to enable direct Gemini API extraction. If Google AI Studio prepay credits are unavailable, set `GEMINI_MODE=openrouter` with `OPENROUTER_API_KEY` and `OPENROUTER_MODEL=google/gemini-2.5-flash` to route the same Gemini extraction step through OpenRouter.
 - **Vultr/PostgreSQL:** Drizzle tables and migrations are included for a PostgreSQL-backed ledger on a Vultr VM. Without `DATABASE_URL`, the app uses a labeled in-memory demo ledger.
 
 ## Local Setup
