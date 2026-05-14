@@ -79,12 +79,12 @@ export async function runClearanceScenario(scenarioId: ScenarioId): Promise<Clea
     policyDecision,
     packet,
     ledgerEvents,
-    ledgerBackend: getLedgerBackendLabel(),
+    ledgerBackend: "memory-dev-ledger",
   };
 
+  record.ledgerBackend = await persistBestEffort(record);
   getStore().runs.set(clearanceId, record);
   getStore().latestRunId = clearanceId;
-  await persistBestEffort(record);
 
   return cloneRunRecord(record);
 }
@@ -137,9 +137,9 @@ export async function verifyClearance(clearanceId: string): Promise<ClearanceVer
   const eventsWithVerification = [...record.ledgerEvents, verificationEvent];
   const chainVerification = verifyLedgerChain(eventsWithVerification);
 
-  const updatedRecord = { ...record, ledgerEvents: eventsWithVerification };
+  const updatedRecord: ClearanceRunRecord = { ...record, ledgerEvents: eventsWithVerification };
+  updatedRecord.ledgerBackend = await persistBestEffort(updatedRecord);
   getStore().runs.set(clearanceId, updatedRecord);
-  await persistBestEffort(updatedRecord);
 
   return {
     clearanceId,
@@ -238,11 +238,12 @@ function buildRunLedger(input: {
   return events;
 }
 
-async function persistBestEffort(record: ClearanceRunRecord): Promise<void> {
+async function persistBestEffort(record: ClearanceRunRecord): Promise<ClearanceRunRecord["ledgerBackend"]> {
   try {
-    await persistClearanceRecord(record);
+    return (await persistClearanceRecord(record)) ? "postgres-drizzle" : "memory-dev-ledger";
   } catch (error) {
     console.warn("PostgreSQL persistence unavailable; continuing with memory demo ledger.", error);
+    return "memory-dev-ledger";
   }
 }
 

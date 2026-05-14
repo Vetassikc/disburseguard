@@ -14,10 +14,10 @@ export function getLedgerBackendLabel(): "postgres-drizzle" | "memory-dev-ledger
   return process.env.DATABASE_URL ? "postgres-drizzle" : "memory-dev-ledger";
 }
 
-export async function persistClearanceRecord(record: ClearanceRunRecord): Promise<void> {
+export async function persistClearanceRecord(record: ClearanceRunRecord): Promise<boolean> {
   const db = getDb();
   if (!db) {
-    return;
+    return false;
   }
 
   await db.transaction(async (tx) => {
@@ -107,6 +107,8 @@ export async function persistClearanceRecord(record: ClearanceRunRecord): Promis
         });
     }
   });
+
+  return true;
 }
 
 export async function loadClearanceRecord(clearanceId: string): Promise<ClearanceRunRecord | null> {
