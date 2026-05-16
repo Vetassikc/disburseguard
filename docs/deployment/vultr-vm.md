@@ -56,13 +56,13 @@ docker compose logs -f app
 The demo should be available at:
 
 ```text
-http://YOUR_VULTR_IP:3000/demo
+http://YOUR_VULTR_IP/demo
 ```
 
 The ledger should be available at:
 
 ```text
-http://YOUR_VULTR_IP:3000/ledger
+http://YOUR_VULTR_IP/ledger
 ```
 
 ## Verification

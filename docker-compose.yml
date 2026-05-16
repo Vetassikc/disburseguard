@@ -21,7 +21,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "80:3000"
     environment:
       DATABASE_URL: postgres://disburseguard:${POSTGRES_PASSWORD}@postgres:5432/disburseguard
       GEMINI_MODE: ${GEMINI_MODE:-fixture}
@@ -29,7 +29,7 @@ services:
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
       OPENROUTER_MODEL: ${OPENROUTER_MODEL:-google/gemini-2.5-flash}
-      OPENROUTER_SITE_URL: ${OPENROUTER_SITE_URL:-http://localhost:3000}
+      OPENROUTER_SITE_URL: ${OPENROUTER_SITE_URL:-http://localhost}
       OPENROUTER_APP_TITLE: ${OPENROUTER_APP_TITLE:-DisburseGuard}
       X402_LIVE_SETTLEMENT: ${X402_LIVE_SETTLEMENT:-false}
       SIGNING_PRIVATE_KEY_HEX: ${SIGNING_PRIVATE_KEY_HEX:-}

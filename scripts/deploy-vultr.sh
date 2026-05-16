@@ -32,7 +32,7 @@ fi
 
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$(openssl rand -hex 24)}"
 OPENROUTER_MODEL="${OPENROUTER_MODEL:-google/gemini-2.5-flash}"
-OPENROUTER_SITE_URL="${OPENROUTER_SITE_URL:-http://${REMOTE#*@}:3000}"
+OPENROUTER_SITE_URL="${OPENROUTER_SITE_URL:-http://${REMOTE#*@}}"
 OPENROUTER_APP_TITLE="${OPENROUTER_APP_TITLE:-DisburseGuard}"
 GEMINI_MODE="${GEMINI_MODE:-openrouter}"
 GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
@@ -81,6 +81,11 @@ if ! command -v docker >/dev/null 2>&1; then
   apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 fi
 
+if command -v ufw >/dev/null 2>&1; then
+  ufw allow 80/tcp >/dev/null 2>&1 || true
+  ufw allow 22/tcp >/dev/null 2>&1 || true
+fi
+
 mkdir -p /opt/disburseguard
 tar -xf /tmp/disburseguard.tar -C /opt/disburseguard
 mv /tmp/disburseguard.env /opt/disburseguard/.env
@@ -93,5 +98,5 @@ REMOTE_SCRIPT
 
 echo
 echo "Deployment command finished."
-echo "Demo: http://${REMOTE#*@}:3000/demo"
-echo "Ledger: http://${REMOTE#*@}:3000/ledger"
+echo "Demo: http://${REMOTE#*@}/demo"
+echo "Ledger: http://${REMOTE#*@}/ledger"
