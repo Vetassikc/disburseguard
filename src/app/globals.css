@@ -28,7 +28,7 @@
 body {
   background: var(--dg-bg);
   color: var(--dg-text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 button,
@@ -41,6 +41,17 @@ a {
   background: color-mix(in srgb, var(--dg-panel) 93%, white 7%);
   box-shadow: 0 18px 50px rgb(0 0 0 / 0.25);
   padding: 20px;
+}
+
+.animate-panel {
+  animation: panel-enter 420ms ease both;
+}
+
+.action-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 .panel-heading {
@@ -132,6 +143,14 @@ a {
   background: rgb(255 255 255 / 0.045);
   padding: 14px;
   text-align: left;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.scenario-option:hover {
+  transform: translateY(-1px);
 }
 
 .scenario-option.active {
@@ -193,6 +212,86 @@ a {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.payment-flow {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.http-response {
+  border: 1px solid color-mix(in srgb, var(--dg-oxblood-bright) 55%, white 5%);
+  background:
+    linear-gradient(135deg, rgb(104 33 51 / 0.3), rgb(0 0 0 / 0.18)),
+    rgb(0 0 0 / 0.22);
+  padding: 12px;
+  animation: panel-enter 280ms ease both;
+}
+
+.http-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: white;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.http-line span {
+  color: var(--dg-muted);
+  font-size: 12px;
+}
+
+.http-line strong {
+  color: var(--dg-oxblood-bright);
+  font-size: 13px;
+}
+
+.http-response code {
+  margin-top: 8px;
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--dg-metal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+}
+
+.payment-moment {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid color-mix(in srgb, var(--dg-amber) 50%, white 5%);
+  background: color-mix(in srgb, var(--dg-amber) 12%, transparent);
+  padding: 12px;
+  animation: payment-pulse 900ms ease-in-out infinite;
+}
+
+.payment-moment.paid {
+  border-color: color-mix(in srgb, var(--dg-forest-bright) 55%, white 5%);
+  background: color-mix(in srgb, var(--dg-forest) 22%, transparent);
+  animation: panel-enter 260ms ease both;
+}
+
+.payment-moment svg {
+  color: var(--dg-amber);
+  flex: 0 0 auto;
+}
+
+.payment-moment.paid svg {
+  color: var(--dg-forest-bright);
+}
+
+.payment-moment strong {
+  color: white;
+  font-size: 14px;
+}
+
+.payment-moment p {
+  margin-top: 4px;
+  color: var(--dg-muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .proof-gate div,
@@ -281,6 +380,20 @@ a {
   gap: 10px;
   border-bottom: 1px solid rgb(255 255 255 / 0.08);
   padding: 10px 0;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    padding 180ms ease;
+}
+
+.agent-row.active {
+  border-color: color-mix(in srgb, var(--dg-amber) 45%, transparent);
+  background: color-mix(in srgb, var(--dg-amber) 9%, transparent);
+  padding-inline: 8px;
+}
+
+.agent-row.complete {
+  border-color: rgb(139 216 168 / 0.18);
 }
 
 .agent-row span {
@@ -288,9 +401,47 @@ a {
   font-size: 14px;
 }
 
+.agent-row small {
+  margin-top: 3px;
+  display: block;
+  color: var(--dg-muted);
+  font-size: 11px;
+}
+
 .agent-row strong {
-  color: var(--dg-forest-bright);
+  color: var(--dg-muted);
   font-size: 12px;
+}
+
+.agent-row.running strong {
+  color: var(--dg-amber);
+}
+
+.agent-row.complete strong {
+  color: var(--dg-forest-bright);
+}
+
+.proof-cost {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.035);
+  padding: 10px 12px;
+}
+
+.proof-cost span {
+  color: var(--dg-muted);
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.proof-cost strong {
+  color: var(--dg-metal);
+  font-family: var(--font-geist-mono), monospace;
 }
 
 .receipt-card {
@@ -330,6 +481,7 @@ a {
   border: 1px solid rgb(255 255 255 / 0.08);
   background: rgb(255 255 255 / 0.035);
   padding: 12px;
+  animation: panel-enter 320ms ease both;
 }
 
 .timeline-event > span {
@@ -382,5 +534,28 @@ a {
   .fact-grid,
   .packet-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@keyframes panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes payment-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgb(213 166 66 / 0);
+  }
+
+  50% {
+    box-shadow: 0 0 34px rgb(213 166 66 / 0.22);
   }
 }
