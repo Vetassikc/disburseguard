@@ -33,7 +33,7 @@ services:
       OPENROUTER_APP_TITLE: ${OPENROUTER_APP_TITLE:-DisburseGuard}
       X402_LIVE_SETTLEMENT: ${X402_LIVE_SETTLEMENT:-false}
       SIGNING_PRIVATE_KEY_HEX: ${SIGNING_PRIVATE_KEY_HEX:-}
-    command: sh -c "pnpm db:migrate && pnpm start"
+    command: sh -c "pnpm db:deploy && pnpm start"
 
 volumes:
   postgres-data:

@@ -13,6 +13,7 @@
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:deploy": "tsx scripts/apply-migrations.ts",
     "e2e": "playwright test"
   },
   "dependencies": {
