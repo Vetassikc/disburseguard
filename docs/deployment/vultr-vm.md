@@ -81,6 +81,19 @@ curl -i -X POST http://127.0.0.1:3000/api/clearance/run \
 
 The unpaid proof request should return HTTP 402. The clearance run should return a signed packet and a verification URL.
 
+## Password SSH deploy from this workstation
+
+If the VM was created without an SSH key, use Vultr's root password from the instance page. Do not paste that password into chat or commit it anywhere.
+
+From the repository root:
+
+```bash
+chmod +x scripts/deploy-vultr.sh
+scripts/deploy-vultr.sh root@YOUR_VULTR_IP
+```
+
+The script packages the current committed repository, uploads it with `scp`, creates `/opt/disburseguard/.env` from local `.env.local` values, installs Docker on Ubuntu if needed, and starts the app with Docker Compose.
+
 ## Cost control
 
 For Vultr billing safety, destroy the instance when you no longer need it. Stopped instances can still be billed.
