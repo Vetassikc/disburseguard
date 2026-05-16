@@ -207,11 +207,58 @@ a {
 }
 
 .proof-gate,
-.ledger-grid {
+.ledger-grid,
+.verdict-grid {
   margin-top: 18px;
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.verdict-panel {
+  background:
+    linear-gradient(135deg, rgb(47 111 79 / 0.2), rgb(213 166 66 / 0.08)),
+    color-mix(in srgb, var(--dg-panel-strong) 92%, white 8%);
+}
+
+.verdict-panel.resolved {
+  border-color: color-mix(in srgb, var(--dg-forest-bright) 28%, white 6%);
+}
+
+.verdict-copy {
+  margin-top: 12px;
+  max-width: 920px;
+  color: var(--dg-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.verdict-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.verdict-grid div {
+  border: 1px solid rgb(255 255 255 / 0.09);
+  background: rgb(0 0 0 / 0.2);
+  padding: 12px;
+}
+
+.verdict-grid span,
+.proof-wall span {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dg-muted);
+}
+
+.verdict-grid strong {
+  margin-top: 6px;
+  display: block;
+  overflow-wrap: anywhere;
+  color: white;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 14px;
 }
 
 .payment-flow {
@@ -310,6 +357,37 @@ a {
   color: white;
   font-family: var(--font-geist-mono), monospace;
   font-size: 13px;
+}
+
+.proof-wall {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.wall-fact {
+  min-height: 132px;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  background: rgb(0 0 0 / 0.18);
+  padding: 12px;
+}
+
+.wall-fact strong {
+  margin-top: 8px;
+  display: block;
+  overflow-wrap: anywhere;
+  color: white;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 13px;
+}
+
+.wall-fact p {
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  color: var(--dg-muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .decision-amount {
@@ -516,6 +594,16 @@ a {
   padding: 12px;
 }
 
+@media (max-width: 1180px) {
+  .proof-wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .verdict-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 760px) {
   .surface-panel {
     padding: 16px;
@@ -523,7 +611,9 @@ a {
 
   .panel-heading,
   .proof-gate,
-  .ledger-grid {
+  .ledger-grid,
+  .verdict-grid,
+  .proof-wall {
     grid-template-columns: 1fr;
   }
 

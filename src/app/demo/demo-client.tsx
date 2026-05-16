@@ -105,6 +105,11 @@ export function DemoClient() {
   const ledgerVisible = flow.ledger !== "Queued";
   const approvedAmount = run?.policyDecision.approvedAmount ?? 0;
   const proofCost = run?.proofReceipts.reduce((total, receipt) => total + receipt.quotedCostUsd, 0) ?? 0;
+  const requestedAmount = run?.intent.amount ?? 0;
+  const controlledAmount = run ? Math.max(requestedAmount - approvedAmount, 0) : 0;
+  const primaryProofStep = run?.proofPlan.steps[0];
+  const primaryReceipt = run?.proofReceipts[0];
+  const judgeSummary = getJudgeSummary(run);
 
   return (
     <main className="min-h-screen bg-[var(--dg-bg)] text-[var(--dg-text)]">
@@ -121,7 +126,7 @@ export function DemoClient() {
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <span className="status-pill border-[var(--dg-forest)]/50 bg-[var(--dg-forest)]/15 text-[var(--dg-forest-bright)]">
-              {run?.ledgerBackend ?? "memory-dev-ledger"}
+              {run?.ledgerBackend ?? "ledger-ready"}
             </span>
             <Link className="control-button secondary" href="/ledger">
               <ShieldCheck size={16} />
@@ -164,6 +169,37 @@ export function DemoClient() {
                 ))}
               </div>
               {error ? <p className="mt-4 text-sm text-[var(--dg-oxblood-bright)]">{error}</p> : null}
+            </section>
+
+            <section className={`surface-panel verdict-panel animate-panel ${run ? "resolved" : ""}`}>
+              <div className="panel-heading compact">
+                <div>
+                  <p className="eyebrow">Treasury Verdict</p>
+                  <h2>{judgeSummary.title}</h2>
+                </div>
+                <span className="status-pill border-[var(--dg-metal)]/50 bg-[var(--dg-metal)]/10 text-[var(--dg-metal)]">
+                  {run?.policyDecision.policyVersion ?? "treasury-policy-v1"}
+                </span>
+              </div>
+              <p className="verdict-copy">{judgeSummary.body}</p>
+              <div className="verdict-grid">
+                <div>
+                  <span>Requested</span>
+                  <strong>{run ? `${run.intent.currency} ${requestedAmount.toLocaleString()}` : activeScenario.amount}</strong>
+                </div>
+                <div>
+                  <span>Authorized</span>
+                  <strong>{run ? `${run.intent.currency} ${approvedAmount.toLocaleString()}` : "pending"}</strong>
+                </div>
+                <div>
+                  <span>Controlled</span>
+                  <strong>{run ? `${run.intent.currency} ${controlledAmount.toLocaleString()}` : "locked"}</strong>
+                </div>
+                <div>
+                  <span>Ledger</span>
+                  <strong>{verification?.eventChainValid ? "verified chain" : run?.ledgerBackend ?? "ready"}</strong>
+                </div>
+              </div>
             </section>
 
             <section className="grid gap-5 lg:grid-cols-2">
@@ -234,6 +270,26 @@ export function DemoClient() {
                 ) : (
                   <p className="empty-copy">Proof access is blocked until payment metadata is returned.</p>
                 )}
+              </div>
+            </section>
+
+            <section className="surface-panel animate-panel">
+              <div className="panel-heading compact">
+                <div>
+                  <p className="eyebrow">Proof Wall</p>
+                  <h2>{run ? "Paid evidence before payout authorization" : "Payout held before paid evidence"}</h2>
+                </div>
+                <span className="status-pill border-white/15 bg-white/8 text-white">
+                  {verification?.eventChainValid ? "audit-ready" : run ? "packet-built" : "locked"}
+                </span>
+              </div>
+              <div className="proof-wall">
+                <WallFact label="Gate" value={proofVisible ? "HTTP 402 required" : "not requested"} detail={run?.proofGate.unpaid.status === 402 ? run.proofGate.unpaid.paymentRequired.scheme : "proof endpoint is unpaid"} />
+                <WallFact label="Quote" value={primaryProofStep ? `$${primaryProofStep.quotedCostUsd.toFixed(2)}` : "pending"} detail={primaryProofStep?.x402Resource ?? "vendor-risk proof resource"} />
+                <WallFact label="Receipt" value={primaryReceipt ? primaryReceipt.paymentStatus : "locked"} detail={primaryReceipt ? `${primaryReceipt.receiptHash.slice(0, 20)}...` : "no proof receipt yet"} />
+                <WallFact label="Policy" value={run?.policyDecision.decision ?? "pending"} detail={run?.policyDecision.reasons[0] ?? "treasury-policy-v1 has not evaluated the payout"} />
+                <WallFact label="Packet" value={packetVisible && run ? run.packet.signingMode : "unsigned"} detail={packetVisible && run ? `${run.packet.packetHash.slice(0, 20)}...` : "ClearancePacket not issued"} />
+                <WallFact label="Ledger" value={verification?.eventChainValid ? "valid chain" : "pending"} detail={verification?.lastEventHash ? `${verification.lastEventHash.slice(0, 20)}...` : "append-only verification awaits run"} />
               </div>
             </section>
 
@@ -383,6 +439,51 @@ function Fact({ label, value }: { label: string; value: string }) {
       <dd>{value}</dd>
     </div>
   );
+}
+
+function WallFact({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="wall-fact">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <p>{detail}</p>
+    </div>
+  );
+}
+
+function getJudgeSummary(run: ClearanceRunRecord | null) {
+  if (!run) {
+    return {
+      title: "Company funds are locked",
+      body: "The payout cannot move until the agent obtains paid proof, applies treasury-policy-v1, signs a ClearancePacket, and verifies the ledger chain.",
+    };
+  }
+
+  if (run.policyDecision.decision === "CLEAR") {
+    return {
+      title: "Payout cleared with paid proof",
+      body: "Vendor, recipient, confidence, and proof receipt checks passed. The signed packet authorizes the full payout.",
+    };
+  }
+
+  if (run.policyDecision.decision === "LIMIT") {
+    return {
+      title: "High-value payout capped before funds move",
+      body: "The agent acquired proof, then treasury-policy-v1 limited authorization to the configured cap while preserving the signed audit trail.",
+    };
+  }
+
+  if (run.policyDecision.decision === "BLOCK") {
+    return {
+      title: "Payout blocked by hard-risk signal",
+      body: "A recipient or vendor-risk failure stopped authorization. The packet and ledger preserve why company money could not move.",
+    };
+  }
+
+  return {
+    title: "Payout routed to review",
+    body: "The agent found insufficient proof quality for straight-through payment, so the packet records a human-review outcome.",
+  };
 }
 
 function getDecisionTone(decision?: string) {
