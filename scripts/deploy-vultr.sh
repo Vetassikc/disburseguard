@@ -30,13 +30,17 @@ if [[ -z "${SIGNING_PRIVATE_KEY_HEX:-}" ]]; then
   exit 1
 fi
 
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-$(openssl rand -hex 24)}"
+REMOTE_POSTGRES_PASSWORD="$(
+  ssh "$REMOTE" "test -f /opt/disburseguard/.env && sed -n 's/^POSTGRES_PASSWORD=//p' /opt/disburseguard/.env | head -n 1" 2>/dev/null || true
+)"
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-${REMOTE_POSTGRES_PASSWORD:-$(openssl rand -hex 24)}}"
 OPENROUTER_MODEL="${OPENROUTER_MODEL:-google/gemini-2.5-flash}"
 OPENROUTER_SITE_URL="${OPENROUTER_SITE_URL:-http://${REMOTE#*@}}"
 OPENROUTER_APP_TITLE="${OPENROUTER_APP_TITLE:-DisburseGuard}"
 GEMINI_MODE="${GEMINI_MODE:-openrouter}"
 GEMINI_MODEL="${GEMINI_MODEL:-gemini-2.5-flash}"
 X402_LIVE_SETTLEMENT="${X402_LIVE_SETTLEMENT:-false}"
+RESET_DB_VOLUME="${RESET_DB_VOLUME:-false}"
 
 TMP_DIR="$(mktemp -d)"
 cleanup() {
@@ -64,7 +68,7 @@ scp "$TMP_DIR/disburseguard.tar" "$REMOTE:/tmp/disburseguard.tar"
 scp "$TMP_DIR/production.env" "$REMOTE:/tmp/disburseguard.env"
 
 echo "Installing Docker and starting the app on $REMOTE..."
-ssh "$REMOTE" bash -s <<'REMOTE_SCRIPT'
+ssh "$REMOTE" "RESET_DB_VOLUME=$RESET_DB_VOLUME bash -s" <<'REMOTE_SCRIPT'
 set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
@@ -92,6 +96,9 @@ mv /tmp/disburseguard.env /opt/disburseguard/.env
 chmod 600 /opt/disburseguard/.env
 
 cd /opt/disburseguard
+if [[ "${RESET_DB_VOLUME:-false}" == "true" ]]; then
+  docker compose down -v
+fi
 docker compose up -d --build
 docker compose ps
 REMOTE_SCRIPT
