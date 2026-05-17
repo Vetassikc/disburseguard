@@ -3,6 +3,7 @@ import { z } from "zod";
 export const scenarioIdSchema = z.enum(["clear", "limit", "review", "block"]);
 export const policyOutcomeSchema = z.enum(["CLEAR", "LIMIT", "REVIEW", "BLOCK"]);
 export const agentStateSchema = z.enum(["Queued", "Running", "Complete", "Warning", "Failed"]);
+export const proofEvidenceTypeSchema = z.enum(["vendor-risk", "recipient-match", "sanctions-screen", "delivery-attestation"]);
 
 export const payoutIntentSchema = z.object({
   id: z.string(),
@@ -48,7 +49,7 @@ export const proofPlanSchema = z.object({
   steps: z.array(
     z.object({
       provider: z.string(),
-      evidenceType: z.string(),
+      evidenceType: proofEvidenceTypeSchema,
       x402Resource: z.string(),
       quotedCostUsd: z.number().nonnegative(),
       required: z.boolean(),
@@ -60,7 +61,7 @@ export const proofPlanSchema = z.object({
 export const proofReceiptSchema = z.object({
   id: z.string(),
   provider: z.string(),
-  evidenceType: z.string(),
+  evidenceType: proofEvidenceTypeSchema,
   source: z.string(),
   summary: z.string(),
   confidence: z.number().min(0).max(1),
@@ -134,6 +135,7 @@ export type ScenarioId = z.infer<typeof scenarioIdSchema>;
 export type PayoutIntent = z.infer<typeof payoutIntentSchema>;
 export type ExtractionResult = z.infer<typeof extractionResultSchema>;
 export type ProofPlan = z.infer<typeof proofPlanSchema>;
+export type ProofEvidenceType = z.infer<typeof proofEvidenceTypeSchema>;
 export type ProofReceipt = z.infer<typeof proofReceiptSchema>;
 export type PolicyDecision = z.infer<typeof policyDecisionSchema>;
 export type ClearancePacket = z.infer<typeof clearancePacketSchema>;
