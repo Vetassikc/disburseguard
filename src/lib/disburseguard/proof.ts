@@ -1,4 +1,4 @@
-import type { PayoutIntent, ProofReceipt } from "./contracts";
+import type { PayoutIntent, ProofEvidenceType, ProofReceipt } from "./contracts";
 import { getPayoutFixture } from "./fixtures";
 
 export type PaymentRequired = {
@@ -11,7 +11,7 @@ export type PaymentRequired = {
   fallbackAvailable: boolean;
 };
 
-export type VendorRiskProofResult =
+export type ProofEvidenceResult =
   | {
       status: 402;
       paymentRequired: PaymentRequired;
@@ -23,31 +23,41 @@ export type VendorRiskProofResult =
       receipt: ProofReceipt;
     };
 
-type RequestVendorRiskProofInput = {
+type RequestProofEvidenceInput = {
   intent: PayoutIntent;
+  evidenceType: ProofEvidenceType;
   paid: boolean;
   paymentMode?: ProofReceipt["paymentMode"];
 };
 
-export function requestVendorRiskProof({
+export function requestProofEvidence({
   intent,
+  evidenceType,
   paid,
   paymentMode = "deterministic-fallback",
-}: RequestVendorRiskProofInput): VendorRiskProofResult {
-  const fixtureReceipt = getPayoutFixture(intent.scenarioId).proofReceipts[0];
+}: RequestProofEvidenceInput): ProofEvidenceResult {
+  const fixtureReceipt = getPayoutFixture(intent.scenarioId).proofReceipts.find((receipt) => receipt.evidenceType === evidenceType);
+  const paymentRequired: PaymentRequired = {
+    scheme: "x402",
+    status: "payment-required",
+    provider: fixtureReceipt?.provider ?? `DisburseGuard ${evidenceType} Proof`,
+    resource: fixtureReceipt?.x402Resource ?? `/api/proofs/${evidenceType}?vendor=${encodeURIComponent(intent.vendorId)}`,
+    quotedCostUsd: fixtureReceipt?.quotedCostUsd ?? getDefaultQuote(evidenceType),
+    accepts: ["USDC", "deterministic-fallback-receipt"],
+    fallbackAvailable: true,
+  };
 
   if (!paid) {
     return {
       status: 402,
-      paymentRequired: {
-        scheme: "x402",
-        status: "payment-required",
-        provider: fixtureReceipt.provider,
-        resource: fixtureReceipt.x402Resource,
-        quotedCostUsd: fixtureReceipt.quotedCostUsd,
-        accepts: ["USDC", "deterministic-fallback-receipt"],
-        fallbackAvailable: true,
-      },
+      paymentRequired,
+    };
+  }
+
+  if (!fixtureReceipt) {
+    return {
+      status: 402,
+      paymentRequired,
     };
   }
 
@@ -59,4 +69,17 @@ export function requestVendorRiskProof({
       paymentStatus: paymentMode === "live-x402" ? "paid" : "fallback-paid",
     },
   };
+}
+
+export type VendorRiskProofResult = ProofEvidenceResult;
+
+export function requestVendorRiskProof(input: Omit<RequestProofEvidenceInput, "evidenceType">): ProofEvidenceResult {
+  return requestProofEvidence({ ...input, evidenceType: "vendor-risk" });
+}
+
+function getDefaultQuote(evidenceType: ProofEvidenceType): number {
+  if (evidenceType === "recipient-match") return 0.07;
+  if (evidenceType === "sanctions-screen") return 0.11;
+  if (evidenceType === "delivery-attestation") return 0.09;
+  return 0.08;
 }

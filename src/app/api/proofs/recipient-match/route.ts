@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
   const result = requestProofEvidence({
     intent: getPayoutFixture(scenarioId.data).intent,
-    evidenceType: "vendor-risk",
+    evidenceType: "recipient-match",
     paid: body.paid === true,
     paymentMode: body.paymentMode === "live-x402" ? "live-x402" : "deterministic-fallback",
   });
