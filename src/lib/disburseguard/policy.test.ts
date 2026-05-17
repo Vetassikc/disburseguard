@@ -16,6 +16,8 @@ describe("treasury-policy-v1", () => {
     expect(decision.decision).toBe("CLEAR");
     expect(decision.approvedAmount).toBe(fixture.intent.amount);
     expect(decision.policyVersion).toBe("treasury-policy-v1");
+    expect(decision.checks.map((check) => check.label)).toContain("Sanctions screen");
+    expect(decision.checks.map((check) => check.label)).toContain("Delivery attestation");
   });
 
   it("limits a high-value payout with partial confidence to 25000", () => {
@@ -57,6 +59,7 @@ describe("treasury-policy-v1", () => {
 
     expect(decision.decision).toBe("BLOCK");
     expect(decision.approvedAmount).toBe(0);
+    expect(fixture.proofReceipts.some((receipt) => receipt.evidenceType === "delivery-attestation")).toBe(false);
     expect(decision.reasons).toContain("Recipient account does not match the verified vendor record.");
   });
 });

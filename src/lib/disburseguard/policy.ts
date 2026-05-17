@@ -11,33 +11,50 @@ type DecidePolicyInput = {
 
 export function decidePolicy({ intent, extraction, proofReceipts }: DecidePolicyInput): PolicyDecision {
   const paidReceipts = proofReceipts.filter((receipt) => receipt.paymentStatus === "paid" || receipt.paymentStatus === "fallback-paid");
+  const receiptsByType = new Map(paidReceipts.map((receipt) => [receipt.evidenceType, receipt]));
+  const vendorProof = receiptsByType.get("vendor-risk");
+  const recipientProof = receiptsByType.get("recipient-match");
+  const sanctionsProof = receiptsByType.get("sanctions-screen");
+  const deliveryProof = receiptsByType.get("delivery-attestation");
+  const recipientMatches = intent.recipientAccountFingerprint === intent.expectedRecipientAccountFingerprint;
   const freshPaidReceipts = paidReceipts.filter((receipt) => !receipt.stale);
   const bestProofConfidence = Math.max(0, ...freshPaidReceipts.map((receipt) => receipt.confidence));
-  const recipientMatches = intent.recipientAccountFingerprint === intent.expectedRecipientAccountFingerprint;
-  const hasPaidProof = freshPaidReceipts.length > 0;
-  const proofMeetsReviewFloor = hasPaidProof && bestProofConfidence >= 0.65;
-  const proofIsStrong = hasPaidProof && bestProofConfidence >= 0.85;
+  const requiredProofAvailable = Boolean(vendorProof && recipientProof && sanctionsProof);
+  const deliveryIsUsable = Boolean(deliveryProof && !deliveryProof.stale && deliveryProof.confidence >= 0.65);
+  const proofMeetsReviewFloor = requiredProofAvailable && bestProofConfidence >= 0.65 && deliveryIsUsable;
+  const proofIsStrong = requiredProofAvailable && deliveryIsUsable && paidReceipts.every((receipt) => receipt.confidence >= 0.85 && !receipt.stale);
   const highValue = intent.amount > LIMIT_APPROVED_AMOUNT;
+  const sanctionsSummary = sanctionsProof?.summary.toLowerCase() ?? "";
+  const sanctionsHit = sanctionsSummary.includes("hit") && !sanctionsSummary.includes("no sanctions");
 
   const checks: PolicyDecision["checks"] = [
     {
+      label: "Vendor risk proof",
+      status: vendorProof && !vendorProof.stale && vendorProof.confidence >= 0.85 ? "pass" : vendorProof ? "warn" : "fail",
+      detail: vendorProof
+        ? `${vendorProof.summary} Confidence ${vendorProof.confidence.toFixed(2)}.`
+        : "No paid vendor-risk proof receipt is available.",
+    },
+    {
       label: "Recipient match",
-      status: recipientMatches ? "pass" : "fail",
-      detail: recipientMatches
+      status: recipientMatches && recipientProof ? "pass" : recipientMatches ? "warn" : "fail",
+      detail: recipientMatches && recipientProof
         ? "Invoice recipient matches the verified vendor record."
-        : "Invoice recipient differs from the verified vendor record.",
+        : recipientMatches
+          ? "Recipient fingerprints match, but the paid recipient proof is missing."
+          : "Invoice recipient differs from the verified vendor record.",
     },
     {
-      label: "Paid proof",
-      status: proofIsStrong ? "pass" : proofMeetsReviewFloor ? "warn" : "fail",
-      detail: hasPaidProof
-        ? `Best fresh paid proof confidence is ${bestProofConfidence.toFixed(2)}.`
-        : "No fresh paid proof receipt is available.",
+      label: "Sanctions screen",
+      status: sanctionsHit ? "fail" : sanctionsProof ? "pass" : "fail",
+      detail: sanctionsProof ? sanctionsProof.summary : "No paid sanctions-screen proof receipt is available.",
     },
     {
-      label: "Extraction confidence",
-      status: extraction.confidence >= 0.9 ? "pass" : extraction.confidence >= 0.65 ? "warn" : "fail",
-      detail: `Structured extraction confidence is ${extraction.confidence.toFixed(2)}.`,
+      label: "Delivery attestation",
+      status: deliveryProof && !deliveryProof.stale && deliveryProof.confidence >= 0.85 ? "pass" : deliveryProof && !deliveryProof.stale ? "warn" : "fail",
+      detail: deliveryProof
+        ? `${deliveryProof.summary} Confidence ${deliveryProof.confidence.toFixed(2)}.`
+        : "No paid delivery-attestation proof receipt is available.",
     },
     {
       label: "Capital exposure",
@@ -59,13 +76,13 @@ export function decidePolicy({ intent, extraction, proofReceipts }: DecidePolicy
     };
   }
 
-  if (intent.riskProfile === "high" || extraction.fields.vendorRisk === "high") {
+  if (intent.riskProfile === "high" || extraction.fields.vendorRisk === "high" || sanctionsHit) {
     return {
       decision: "BLOCK",
       approvedAmount: 0,
       currency: intent.currency,
       policyVersion: POLICY_VERSION,
-      reasons: ["Vendor risk is high under treasury-policy-v1."],
+      reasons: [sanctionsHit ? "Sanctions or watchlist proof produced a critical hit." : "Vendor risk is high under treasury-policy-v1."],
       checks,
     };
   }

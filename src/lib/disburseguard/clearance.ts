@@ -1,12 +1,12 @@
-import type { ScenarioId } from "./contracts";
-import type { ClearanceRunRecord, ClearanceVerification } from "./clearance-types";
+import type { ProofEvidenceType, ScenarioId } from "./contracts";
+import type { ClearanceRunRecord, ClearanceVerification, ProofEconomics } from "./clearance-types";
 import { createProofPlan } from "./proof-plan";
 import { extractPayoutContext } from "./extraction";
 import { getPayoutFixture, payoutFixtures } from "./fixtures";
 import { createLedgerEvent, verifyLedgerChain } from "./ledger";
 import { decidePolicy } from "./policy";
 import { getLedgerBackendLabel, loadClearanceRecord, persistClearanceRecord } from "./persistence";
-import { requestVendorRiskProof } from "./proof";
+import { requestProofEvidence } from "./proof";
 import { buildUnsignedPacket, signClearancePacket, verifyClearancePacket } from "./signing";
 
 type Store = {
@@ -43,10 +43,34 @@ export async function runClearanceScenario(scenarioId: ScenarioId): Promise<Clea
   const occurredAt = new Date().toISOString();
   const extraction = await extractPayoutContext(fixture.intent);
   const proofPlan = createProofPlan(clearanceId, fixture.intent, extraction);
-  const unpaid = requestVendorRiskProof({ intent: fixture.intent, paid: false });
-  const paid = requestVendorRiskProof({ intent: fixture.intent, paid: true, paymentMode: "deterministic-fallback" });
-  const proofReceipts = paid.status === 200 ? [paid.receipt] : [];
+  const plannedTypes = proofPlan.steps.map((step) => step.evidenceType);
+  const purchasedTypes = selectPurchasedProofs(scenarioId, plannedTypes);
+  const skippedTypes = plannedTypes.filter((evidenceType) => !purchasedTypes.includes(evidenceType));
+  const unpaidByType = Object.fromEntries(
+    plannedTypes.map((evidenceType) => [
+      evidenceType,
+      requestProofEvidence({ intent: fixture.intent, evidenceType, paid: false }),
+    ]),
+  ) as Partial<Record<ProofEvidenceType, ReturnType<typeof requestProofEvidence>>>;
+  const paidByType = Object.fromEntries(
+    purchasedTypes.map((evidenceType) => [
+      evidenceType,
+      requestProofEvidence({ intent: fixture.intent, evidenceType, paid: true, paymentMode: "deterministic-fallback" }),
+    ]),
+  ) as Partial<Record<ProofEvidenceType, ReturnType<typeof requestProofEvidence>>>;
+  const unpaid = unpaidByType["vendor-risk"] ?? requestProofEvidence({ intent: fixture.intent, evidenceType: "vendor-risk", paid: false });
+  const paid = paidByType["vendor-risk"] ?? requestProofEvidence({ intent: fixture.intent, evidenceType: "vendor-risk", paid: true });
+  const proofReceipts = purchasedTypes.flatMap((evidenceType) => {
+    const result = paidByType[evidenceType];
+    return result?.status === 200 ? [result.receipt] : [];
+  });
   const policyDecision = decidePolicy({ intent: fixture.intent, extraction, proofReceipts });
+  const proofEconomics = buildProofEconomics({
+    intentAmount: fixture.intent.amount,
+    approvedAmount: policyDecision.approvedAmount,
+    proofReceipts,
+    skippedTypes,
+  });
   const packet = await signClearancePacket(
     buildUnsignedPacket({
       clearanceId,
@@ -63,9 +87,11 @@ export async function runClearanceScenario(scenarioId: ScenarioId): Promise<Clea
     intentId: fixture.intent.id,
     extractionConfidence: extraction.confidence,
     proofPlanId: proofPlan.id,
-    unpaid,
-    proofReceiptId: proofReceipts[0]?.id ?? null,
+    unpaidByType,
+    proofReceipts,
+    skippedTypes,
     policyDecision: policyDecision.decision,
+    proofEconomics,
     packetHash: packet.packetHash,
   });
 
@@ -74,8 +100,9 @@ export async function runClearanceScenario(scenarioId: ScenarioId): Promise<Clea
     intent: fixture.intent,
     extraction,
     proofPlan,
-    proofGate: { unpaid, paid },
+    proofGate: { unpaid, paid, unpaidByType, paidByType },
     proofReceipts,
+    proofEconomics,
     policyDecision,
     packet,
     ledgerEvents,
@@ -159,9 +186,11 @@ function buildRunLedger(input: {
   intentId: string;
   extractionConfidence: number;
   proofPlanId: string;
-  unpaid: ReturnType<typeof requestVendorRiskProof>;
-  proofReceiptId: string | null;
+  unpaidByType: Partial<Record<ProofEvidenceType, ReturnType<typeof requestProofEvidence>>>;
+  proofReceipts: ClearanceRunRecord["proofReceipts"];
+  skippedTypes: ProofEvidenceType[];
   policyDecision: string;
+  proofEconomics: ProofEconomics;
   packetHash: string;
 }) {
   const events = [
@@ -194,32 +223,63 @@ function buildRunLedger(input: {
       occurredAt: input.occurredAt,
     }),
   );
-  events.push(
-    createLedgerEvent({
-      clearanceId: input.clearanceId,
-      eventType: "PROOF_PAYMENT_REQUIRED",
-      actor: "Payment/Quote Agent",
-      payload: input.unpaid.status === 402 ? input.unpaid.paymentRequired : { status: input.unpaid.status },
-      previousEventHash: events.at(-1)?.eventHash ?? null,
-      occurredAt: input.occurredAt,
-    }),
-  );
-  events.push(
-    createLedgerEvent({
-      clearanceId: input.clearanceId,
-      eventType: "PROOF_RECEIPT_CREATED",
-      actor: "Proof Agent",
-      payload: { proofReceiptId: input.proofReceiptId },
-      previousEventHash: events.at(-1)?.eventHash ?? null,
-      occurredAt: input.occurredAt,
-    }),
-  );
+  for (const [evidenceType, unpaid] of Object.entries(input.unpaidByType) as Array<[ProofEvidenceType, ReturnType<typeof requestProofEvidence>]>) {
+    events.push(
+      createLedgerEvent({
+        clearanceId: input.clearanceId,
+        eventType: "PROOF_PAYMENT_REQUIRED",
+        actor: "Payment/Quote Agent",
+        payload: unpaid.status === 402 ? { evidenceType, ...unpaid.paymentRequired } : { evidenceType, status: unpaid.status },
+        previousEventHash: events.at(-1)?.eventHash ?? null,
+        occurredAt: input.occurredAt,
+      }),
+    );
+
+    const receipt = input.proofReceipts.find((candidate) => candidate.evidenceType === evidenceType);
+    if (receipt) {
+      events.push(
+        createLedgerEvent({
+          clearanceId: input.clearanceId,
+          eventType: "PROOF_RECEIPT_CREATED",
+          actor: "Proof Agent",
+          payload: {
+            evidenceType,
+            proofReceiptId: receipt.id,
+            receiptHash: receipt.receiptHash,
+            quotedCostUsd: receipt.quotedCostUsd,
+          },
+          previousEventHash: events.at(-1)?.eventHash ?? null,
+          occurredAt: input.occurredAt,
+        }),
+      );
+    } else if (input.skippedTypes.includes(evidenceType)) {
+      events.push(
+        createLedgerEvent({
+          clearanceId: input.clearanceId,
+          eventType: "PROOF_RECEIPT_CREATED",
+          actor: "Proof Agent",
+          payload: {
+            evidenceType,
+            proofReceiptId: null,
+            skipped: true,
+            reason: "Hard-risk signal stopped further proof spend.",
+          },
+          previousEventHash: events.at(-1)?.eventHash ?? null,
+          occurredAt: input.occurredAt,
+        }),
+      );
+    }
+  }
   events.push(
     createLedgerEvent({
       clearanceId: input.clearanceId,
       eventType: "POLICY_DECIDED",
       actor: "Policy Guard",
-      payload: { decision: input.policyDecision },
+      payload: {
+        decision: input.policyDecision,
+        proofSpendUsd: input.proofEconomics.proofSpendUsd,
+        capitalControlled: input.proofEconomics.capitalControlled,
+      },
       previousEventHash: events.at(-1)?.eventHash ?? null,
       occurredAt: input.occurredAt,
     }),
@@ -236,6 +296,30 @@ function buildRunLedger(input: {
   );
 
   return events;
+}
+
+function selectPurchasedProofs(scenarioId: ScenarioId, plannedTypes: ProofEvidenceType[]): ProofEvidenceType[] {
+  if (scenarioId === "block") {
+    return plannedTypes.filter((evidenceType) => evidenceType !== "delivery-attestation");
+  }
+
+  return plannedTypes;
+}
+
+function buildProofEconomics(input: {
+  intentAmount: number;
+  approvedAmount: number;
+  proofReceipts: ClearanceRunRecord["proofReceipts"];
+  skippedTypes: ProofEvidenceType[];
+}): ProofEconomics {
+  return {
+    proofSpendUsd: input.proofReceipts.reduce((sum, receipt) => sum + receipt.quotedCostUsd, 0),
+    capitalRequested: input.intentAmount,
+    capitalApproved: input.approvedAmount,
+    capitalControlled: Math.max(input.intentAmount - input.approvedAmount, 0),
+    proofsPurchased: input.proofReceipts.map((receipt) => receipt.evidenceType),
+    proofsSkipped: input.skippedTypes,
+  };
 }
 
 async function persistBestEffort(record: ClearanceRunRecord): Promise<ClearanceRunRecord["ledgerBackend"]> {

@@ -5,7 +5,7 @@ import postgres from "postgres";
 import { clearancePackets, clearanceRuns, ledgerEvents, payoutIntents, proofReceipts } from "@/db/schema";
 
 import type { ClearanceRunRecord } from "./clearance-types";
-import type { ClearancePacket, LedgerEvent, ProofReceipt } from "./contracts";
+import type { ClearancePacket, LedgerEvent, ProofEvidenceType, ProofReceipt } from "./contracts";
 
 let sqlClient: ReturnType<typeof postgres> | null = null;
 let dbClient: ReturnType<typeof drizzle> | null = null;
@@ -127,15 +127,32 @@ export async function loadClearanceRecord(clearanceId: string): Promise<Clearanc
 
   const receipts = await db.select().from(proofReceipts).where(eq(proofReceipts.clearanceId, clearanceId));
   const events = await db.select().from(ledgerEvents).where(eq(ledgerEvents.clearanceId, clearanceId)).orderBy(asc(ledgerEvents.sequence));
+  const intentPayload = intent.payload as ClearanceRunRecord["intent"];
+  const loadedReceipts = receipts.map((receipt) => receipt.payload as ProofReceipt);
+  const policyDecision = run.policyDecision as ClearanceRunRecord["policyDecision"];
+  const loadedProofGate = run.proofGate as ClearanceRunRecord["proofGate"];
+  const proofEconomics = {
+    proofSpendUsd: loadedReceipts.reduce((sum, receipt) => sum + receipt.quotedCostUsd, 0),
+    capitalRequested: intentPayload.amount,
+    capitalApproved: policyDecision.approvedAmount,
+    capitalControlled: Math.max(intentPayload.amount - policyDecision.approvedAmount, 0),
+    proofsPurchased: loadedReceipts.map((receipt) => receipt.evidenceType),
+    proofsSkipped: [] as ProofEvidenceType[],
+  };
 
   return {
     clearanceId: run.id,
-    intent: intent.payload as ClearanceRunRecord["intent"],
+    intent: intentPayload,
     extraction: run.extraction as ClearanceRunRecord["extraction"],
     proofPlan: run.proofPlan as ClearanceRunRecord["proofPlan"],
-    proofGate: run.proofGate as ClearanceRunRecord["proofGate"],
-    proofReceipts: receipts.map((receipt) => receipt.payload as ProofReceipt),
-    policyDecision: run.policyDecision as ClearanceRunRecord["policyDecision"],
+    proofGate: {
+      ...loadedProofGate,
+      unpaidByType: loadedProofGate.unpaidByType ?? {},
+      paidByType: loadedProofGate.paidByType ?? {},
+    },
+    proofReceipts: loadedReceipts,
+    proofEconomics,
+    policyDecision,
     packet: packet.payload as ClearancePacket,
     ledgerEvents: events.map((event) => event.payload as LedgerEvent),
     ledgerBackend: "postgres-drizzle",
