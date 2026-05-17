@@ -104,12 +104,19 @@ export function DemoClient() {
   const packetVisible = flow.audit === "Complete";
   const ledgerVisible = flow.ledger !== "Queued";
   const approvedAmount = run?.policyDecision.approvedAmount ?? 0;
-  const proofCost = run?.proofReceipts.reduce((total, receipt) => total + receipt.quotedCostUsd, 0) ?? 0;
+  const proofCost = run?.proofEconomics.proofSpendUsd ?? 0;
   const requestedAmount = run?.intent.amount ?? 0;
-  const controlledAmount = run ? Math.max(requestedAmount - approvedAmount, 0) : 0;
+  const controlledAmount = run?.proofEconomics.capitalControlled ?? 0;
   const primaryProofStep = run?.proofPlan.steps[0];
   const primaryReceipt = run?.proofReceipts[0];
   const judgeSummary = getJudgeSummary(run);
+  const marketplaceRows = run
+    ? run.proofPlan.steps.map((step) => {
+        const receipt = run.proofReceipts.find((candidate) => candidate.evidenceType === step.evidenceType);
+        const skipped = run.proofEconomics.proofsSkipped.includes(step.evidenceType);
+        return { step, receipt, skipped };
+      })
+    : [];
 
   return (
     <main className="min-h-screen bg-[var(--dg-bg)] text-[var(--dg-text)]">
@@ -296,6 +303,41 @@ export function DemoClient() {
             <section className="surface-panel animate-panel">
               <div className="panel-heading compact">
                 <div>
+                  <p className="eyebrow">Proof Marketplace</p>
+                  <h2>
+                    {run
+                      ? `Agent bought ${run.proofEconomics.proofsPurchased.length} proofs for ${formatUsd(run.proofEconomics.proofSpendUsd)}`
+                      : "Proof budget not spent yet"}
+                  </h2>
+                </div>
+                <span className="status-pill border-[var(--dg-amber)]/50 bg-[var(--dg-amber)]/15 text-[var(--dg-amber)]">
+                  x402-gated
+                </span>
+              </div>
+              <div className="marketplace-grid">
+                {marketplaceRows.length > 0 ? (
+                  marketplaceRows.map(({ step, receipt, skipped }) => (
+                    <article className={receipt ? "marketplace-row paid" : skipped ? "marketplace-row skipped" : "marketplace-row"} key={step.evidenceType}>
+                      <span>{step.evidenceType}</span>
+                      <strong>{receipt ? "paid receipt" : skipped ? "skipped" : "402 required"}</strong>
+                      <p>{receipt?.summary ?? step.reason}</p>
+                      <code>{receipt ? `${receipt.receiptHash.slice(0, 20)}...` : `${step.x402Resource}...`}</code>
+                    </article>
+                  ))
+                ) : (
+                  <article className="marketplace-row">
+                    <span>x402 proof plan</span>
+                    <strong>locked</strong>
+                    <p>Run clearance to let the agent quote and buy vendor, recipient, sanctions, and delivery proofs.</p>
+                    <code>/api/proofs/*</code>
+                  </article>
+                )}
+              </div>
+            </section>
+
+            <section className="surface-panel animate-panel">
+              <div className="panel-heading compact">
+                <div>
                   <p className="eyebrow">Decision Trail</p>
                   <h2 className={decisionTone.className}>{decisionVisible ? run?.policyDecision.decision : "Not run"}</h2>
                 </div>
@@ -462,28 +504,32 @@ function getJudgeSummary(run: ClearanceRunRecord | null) {
   if (run.policyDecision.decision === "CLEAR") {
     return {
       title: "Payout cleared with paid proof",
-      body: "Vendor, recipient, confidence, and proof receipt checks passed. The signed packet authorizes the full payout.",
+      body: `The agent bought ${run.proofEconomics.proofsPurchased.length} paid proofs for ${formatUsd(run.proofEconomics.proofSpendUsd)} and authorized the full payout with a signed audit trail.`,
     };
   }
 
   if (run.policyDecision.decision === "LIMIT") {
     return {
       title: "High-value payout capped before funds move",
-      body: "The agent acquired proof, then treasury-policy-v1 limited authorization to the configured cap while preserving the signed audit trail.",
+      body: `The agent acquired multiple paid proofs, spent ${formatUsd(run.proofEconomics.proofSpendUsd)}, and capped authorization while preserving the signed audit trail.`,
     };
   }
 
   if (run.policyDecision.decision === "BLOCK") {
     return {
       title: "Payout blocked by hard-risk signal",
-      body: "A recipient or vendor-risk failure stopped authorization. The packet and ledger preserve why company money could not move.",
+      body: `A hard-risk signal stopped authorization after ${run.proofEconomics.proofsPurchased.length} proofs, skipping ${run.proofEconomics.proofsSkipped.length} unnecessary proof purchase.`,
     };
   }
 
   return {
     title: "Payout routed to review",
-    body: "The agent found insufficient proof quality for straight-through payment, so the packet records a human-review outcome.",
+    body: `The agent spent ${formatUsd(run.proofEconomics.proofSpendUsd)} on proof, found insufficient evidence quality, and recorded a human-review outcome.`,
   };
+}
+
+function formatUsd(value: number) {
+  return `$${value.toFixed(2)}`;
 }
 
 function getDecisionTone(decision?: string) {
