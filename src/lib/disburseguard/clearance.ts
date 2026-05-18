@@ -5,7 +5,7 @@ import { extractPayoutContext } from "./extraction";
 import { getPayoutFixture, payoutFixtures } from "./fixtures";
 import { createLedgerEvent, verifyLedgerChain } from "./ledger";
 import { decidePolicy } from "./policy";
-import { getLedgerBackendLabel, loadClearanceRecord, persistClearanceRecord } from "./persistence";
+import { getLedgerBackendLabel, listPersistedClearanceRecords, loadClearanceRecord, persistClearanceRecord } from "./persistence";
 import { requestProofEvidence } from "./proof";
 import { buildUnsignedPacket, signClearancePacket, verifyClearancePacket } from "./signing";
 
@@ -30,6 +30,23 @@ export function listPayoutIntents() {
 
 export function listClearanceRuns(): ClearanceRunRecord[] {
   return Array.from(getStore().runs.values()).map(cloneRunRecord).reverse();
+}
+
+export async function listClearanceRunsWithPersistence(): Promise<ClearanceRunRecord[]> {
+  const memoryRuns = listClearanceRuns();
+  const persistedRuns = await listPersistedBestEffort();
+  const runsById = new Map<string, ClearanceRunRecord>();
+
+  for (const run of [...memoryRuns, ...persistedRuns]) {
+    runsById.set(run.clearanceId, run);
+    getStore().runs.set(run.clearanceId, run);
+  }
+
+  return Array.from(runsById.values()).sort((a, b) => {
+    const aTime = Date.parse(a.ledgerEvents[0]?.occurredAt ?? "0");
+    const bTime = Date.parse(b.ledgerEvents[0]?.occurredAt ?? "0");
+    return bTime - aTime;
+  });
 }
 
 export function getLatestClearanceRun(): ClearanceRunRecord | null {
@@ -337,6 +354,15 @@ async function loadBestEffort(clearanceId: string): Promise<ClearanceRunRecord |
   } catch (error) {
     console.warn("PostgreSQL load unavailable; checking memory demo ledger.", error);
     return null;
+  }
+}
+
+async function listPersistedBestEffort(): Promise<ClearanceRunRecord[]> {
+  try {
+    return await listPersistedClearanceRecords();
+  } catch (error) {
+    console.warn("PostgreSQL list unavailable; showing memory demo ledger.", error);
+    return [];
   }
 }
 

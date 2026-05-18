@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, desc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
@@ -131,20 +131,24 @@ export async function loadClearanceRecord(clearanceId: string): Promise<Clearanc
   const loadedReceipts = receipts.map((receipt) => receipt.payload as ProofReceipt);
   const policyDecision = run.policyDecision as ClearanceRunRecord["policyDecision"];
   const loadedProofGate = run.proofGate as ClearanceRunRecord["proofGate"];
+  const proofPlan = run.proofPlan as ClearanceRunRecord["proofPlan"];
+  const purchasedTypes = new Set(loadedReceipts.map((receipt) => receipt.evidenceType));
   const proofEconomics = {
     proofSpendUsd: loadedReceipts.reduce((sum, receipt) => sum + receipt.quotedCostUsd, 0),
     capitalRequested: intentPayload.amount,
     capitalApproved: policyDecision.approvedAmount,
     capitalControlled: Math.max(intentPayload.amount - policyDecision.approvedAmount, 0),
     proofsPurchased: loadedReceipts.map((receipt) => receipt.evidenceType),
-    proofsSkipped: [] as ProofEvidenceType[],
+    proofsSkipped: proofPlan.steps
+      .map((step) => step.evidenceType)
+      .filter((evidenceType) => !purchasedTypes.has(evidenceType)) as ProofEvidenceType[],
   };
 
   return {
     clearanceId: run.id,
     intent: intentPayload,
     extraction: run.extraction as ClearanceRunRecord["extraction"],
-    proofPlan: run.proofPlan as ClearanceRunRecord["proofPlan"],
+    proofPlan,
     proofGate: {
       ...loadedProofGate,
       unpaidByType: loadedProofGate.unpaidByType ?? {},
@@ -157,6 +161,18 @@ export async function loadClearanceRecord(clearanceId: string): Promise<Clearanc
     ledgerEvents: events.map((event) => event.payload as LedgerEvent),
     ledgerBackend: "postgres-drizzle",
   };
+}
+
+export async function listPersistedClearanceRecords(limit = 20): Promise<ClearanceRunRecord[]> {
+  const db = getDb();
+  if (!db) {
+    return [];
+  }
+
+  const runs = await db.select({ id: clearanceRuns.id }).from(clearanceRuns).orderBy(desc(clearanceRuns.createdAt)).limit(limit);
+  const records = await Promise.all(runs.map((run) => loadClearanceRecord(run.id)));
+
+  return records.filter((record): record is ClearanceRunRecord => Boolean(record));
 }
 
 function getDb(): ReturnType<typeof drizzle> | null {

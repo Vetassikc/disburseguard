@@ -1,13 +1,13 @@
 import { AlertTriangle, CheckCircle2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
-import { listClearanceRuns } from "@/lib/disburseguard/clearance";
+import { listClearanceRunsWithPersistence } from "@/lib/disburseguard/clearance";
 import { verifyLedgerChain } from "@/lib/disburseguard/ledger";
 
 export const dynamic = "force-dynamic";
 
-export default function LedgerPage() {
-  const runs = listClearanceRuns();
+export default async function LedgerPage() {
+  const runs = await listClearanceRunsWithPersistence();
 
   return (
     <main className="min-h-screen bg-[var(--dg-bg)] px-4 py-6 text-[var(--dg-text)] lg:px-6">
