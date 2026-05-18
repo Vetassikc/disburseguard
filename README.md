@@ -47,6 +47,14 @@ The `disburseguard-local` password is only a development credential for the loca
 
 The Vultr VM deployment path is documented in [docs/deployment/vultr-vm.md](docs/deployment/vultr-vm.md). It uses Docker Compose to run the Next.js app and PostgreSQL on one small VM for the hackathon demo.
 
+## Submission Assets
+
+- Cover image: [public/disburseguard-cover.svg](public/disburseguard-cover.svg)
+- Submission copy: [docs/submission/copy.md](docs/submission/copy.md)
+- Demo video script: [docs/submission/demo-video-script.md](docs/submission/demo-video-script.md)
+- Slide deck outline: [docs/submission/slide-deck-outline.md](docs/submission/slide-deck-outline.md)
+- Kraken social copy: [docs/submission/kraken-social.md](docs/submission/kraken-social.md)
+
 ## Verification
 
 ```bash
@@ -59,3 +67,7 @@ pnpm exec playwright test
 ## Clean-Room Note
 
 This repository contains original code, prompts, fixtures, styles, and tests for DisburseGuard. It does not copy implementation artifacts from ProofMesh, Sentinel, Vartovii, CryptoTax, or prior projects. Do not commit real secrets, wallet keys, seed phrases, API keys, or provider credentials.
+
+## License
+
+MIT

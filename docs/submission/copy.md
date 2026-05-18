@@ -15,3 +15,27 @@ DisburseGuard is a proof-paid treasury firewall for autonomous payout workflows.
 ## Tags
 
 x402, X402 Payments, Gemini, Vultr, AI agents, B2B FinOps, compliance, treasury, audit ledger, payments, proof marketplace, sanctions screening, recipient verification
+
+## Cover Image
+
+Use `public/disburseguard-cover.svg` as a 16:9 cover asset. Export to PNG if the submission form does not accept SVG.
+
+## Demo URL
+
+http://80.240.26.25/demo
+
+## Ledger URL
+
+http://80.240.26.25/ledger
+
+## Video Script
+
+See `docs/submission/demo-video-script.md`.
+
+## Slide Deck Outline
+
+See `docs/submission/slide-deck-outline.md`.
+
+## Kraken Social
+
+See `docs/submission/kraken-social.md`.

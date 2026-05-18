@@ -1,0 +1,52 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DisburseGuard cover image</title>
+  <desc id="desc">A proof-paid treasury firewall cover image for the AI Agent Olympics submission.</desc>
+  <rect width="1600" height="900" fill="#10110F"/>
+  <rect x="80" y="72" width="1440" height="756" fill="#191B17" stroke="#393A31" stroke-width="2"/>
+  <rect x="112" y="104" width="1376" height="692" fill="#11120F" stroke="#262820" stroke-width="1"/>
+  <path d="M112 264H1488" stroke="#393A31" stroke-width="2"/>
+  <path d="M940 104V796" stroke="#393A31" stroke-width="2"/>
+  <text x="152" y="162" fill="#C9B98B" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="6">DISBURSEGUARD</text>
+  <text x="152" y="230" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="60" font-weight="700">Proof-Paid Treasury Firewall</text>
+  <text x="980" y="160" fill="#8BD8A8" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">No proof, no payout.</text>
+  <text x="980" y="205" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="23">AI agents buy, verify, sign, and ledger proof</text>
+  <text x="980" y="239" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="23">before company money can move.</text>
+
+  <rect x="152" y="326" width="260" height="122" fill="#20231D" stroke="#C9B98B" stroke-width="2"/>
+  <text x="180" y="370" fill="#C9B98B" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="3">PAYOUT INTENT</text>
+  <text x="180" y="416" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">$75,000</text>
+
+  <path d="M422 387H538" stroke="#C9B98B" stroke-width="4"/>
+  <path d="M524 369L548 387L524 405" stroke="#C9B98B" stroke-width="4"/>
+
+  <rect x="568" y="300" width="270" height="176" fill="#20231D" stroke="#682133" stroke-width="3"/>
+  <text x="596" y="346" fill="#F08BA0" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700">HTTP 402</text>
+  <text x="596" y="386" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">Proof Required</text>
+  <text x="596" y="430" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="20">x402-gated evidence</text>
+
+  <path d="M420 590H548" stroke="#8BD8A8" stroke-width="4"/>
+  <path d="M534 572L558 590L534 608" stroke="#8BD8A8" stroke-width="4"/>
+
+  <rect x="152" y="532" width="260" height="122" fill="#20231D" stroke="#2F6F4F" stroke-width="2"/>
+  <text x="180" y="576" fill="#8BD8A8" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="3">PAID PROOFS</text>
+  <text x="180" y="622" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">4 receipts</text>
+
+  <rect x="568" y="532" width="270" height="122" fill="#20231D" stroke="#2F6F4F" stroke-width="2"/>
+  <text x="596" y="576" fill="#8BD8A8" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="3">POLICY GUARD</text>
+  <text x="596" y="622" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">LIMIT $25,000</text>
+
+  <rect x="980" y="326" width="428" height="74" fill="#20231D" stroke="#393A31" stroke-width="2"/>
+  <text x="1010" y="372" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">Gemini extraction</text>
+  <circle cx="1370" cy="363" r="13" fill="#8BD8A8"/>
+  <rect x="980" y="420" width="428" height="74" fill="#20231D" stroke="#393A31" stroke-width="2"/>
+  <text x="1010" y="466" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">x402 proof marketplace</text>
+  <circle cx="1370" cy="457" r="13" fill="#8BD8A8"/>
+  <rect x="980" y="514" width="428" height="74" fill="#20231D" stroke="#393A31" stroke-width="2"/>
+  <text x="1010" y="560" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">Signed ClearancePacket</text>
+  <circle cx="1370" cy="551" r="13" fill="#8BD8A8"/>
+  <rect x="980" y="608" width="428" height="74" fill="#20231D" stroke="#393A31" stroke-width="2"/>
+  <text x="1010" y="654" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700">Vultr Postgres ledger</text>
+  <circle cx="1370" cy="645" r="13" fill="#8BD8A8"/>
+
+  <text x="152" y="744" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="22">Built for AI Agent Olympics: x402 Payments, Gemini, Vultr, AI agents, B2B FinOps, compliance.</text>
+</svg>
