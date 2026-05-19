@@ -1,22 +1,28 @@
 # Slide Deck Outline
 
-Keep the final PDF concise: 6 slides.
+Keep the final PDF concise: 7 slides.
 
-## 1. Title
+## 1. Thesis
 
-DisburseGuard: Proof-Paid Treasury Firewall for AI Agents
+No proof. No payout.
 
-No proof, no payout.
+DisburseGuard is a proof-paid treasury firewall for AI payout agents. The agent must buy, verify, sign, and ledger proof before company money can move.
 
-## 2. Problem
+## 2. Why Now
 
-AI agents can now initiate real business workflows, but treasury controls still assume a human reviewer sits before every payout.
+AI agents are crossing from advice into authorization.
 
-Risk: a confident agent can summarize an invoice and move money without independently paid, verified, and auditable proof.
+Summaries are not proof. A payout agent needs a pre-payout enforcement layer, not another dashboard after the money is gone.
 
-## 3. Solution
+## 3. Paid Proof
 
-DisburseGuard forces the payout agent to:
+Evidence is protected by payment, not trust.
+
+Proof endpoints return HTTP 402 until the agent pays. Only paid receipts can enter the treasury policy decision.
+
+## 4. Agent Workflow
+
+The product is an acting agent, not a passive dashboard.
 
 - extract invoice context with Gemini
 - request proof through x402-style protected endpoints
@@ -25,13 +31,11 @@ DisburseGuard forces the payout agent to:
 - sign a ClearancePacket
 - append every event to a Vultr-backed ledger
 
-## 4. Agent Flow
-
 Payout intent -> Gemini extraction -> proof plan -> HTTP 402 proof gate -> paid proof receipts -> Policy Guard -> signed packet -> ledger verification.
 
-## 5. Demo Result
+## 5. Treasury Decision
 
-High-value payout scenario:
+Proof quality directly controls how much capital can move. High-value payout scenario:
 
 - requested: USD 75,000
 - proof spend: USD 0.39
@@ -40,9 +44,15 @@ High-value payout scenario:
 - ledger backend: PostgreSQL on Vultr
 - verification: valid packet and valid event chain
 
-## 6. Why It Wins
+## 6. Verification
 
-DisburseGuard converts AI payment safety from a dashboard into an enforceable protocol:
+Every clearance becomes independently verifiable.
+
+The ClearancePacket contains proof hashes, policy version, expiry, rationale, public key, and signature. The ledger chains every event hash.
+
+## 7. Why It Wins
+
+DisburseGuard is a protocol-shaped product for autonomous finance:
 
 - x402-style proof payment is part of the agent workflow
 - proof spend can stop early after a hard-risk signal

@@ -6,96 +6,148 @@
 <style>
 @page { size: 16in 9in; margin: 0; }
 * { box-sizing: border-box; }
-body { margin: 0; background: #10110f; font-family: Arial, Helvetica, sans-serif; color: #f4f1e9; }
-.slide { width: 16in; height: 9in; page-break-after: always; padding: .62in; background: #10110f; }
-.frame { height: 100%; border: 2px solid #393a31; background: #191b17; padding: .46in; display: grid; grid-template-columns: 1.6fr .9fr; gap: .42in; }
-.kicker { color: #c9b98b; font-size: 18px; font-weight: 800; letter-spacing: 6px; margin-bottom: 22px; }
-h1 { font-size: 56px; line-height: 1.02; margin: 0 0 28px; letter-spacing: 0; }
-p { color: #aaa79d; font-size: 26px; line-height: 1.42; margin: 0; max-width: 820px; }
-.proof { border: 2px solid #393a31; background: #20231d; padding: 34px; display: flex; flex-direction: column; justify-content: center; }
-.proof div { border-bottom: 1px solid rgba(255,255,255,.12); padding: 20px 0; color: #f4f1e9; font-size: 26px; font-weight: 700; }
-.proof div:first-child { color: #8bd8a8; }
-.proof div:last-child { border-bottom: 0; }
-.footer { align-self: end; color: #c9b98b; font-family: monospace; font-size: 15px; margin-top: auto; }
-.left { display: flex; flex-direction: column; }
+body { margin: 0; background: #0b0c0a; font-family: Arial, Helvetica, sans-serif; color: #f7f3e8; }
+.slide { width: 16in; height: 9in; page-break-after: always; padding: .58in; background: #0b0c0a; }
+.frame { height: 100%; border: 2px solid #3a3d32; background: #12140f; display: grid; grid-template-columns: 1.55fr .95fr; }
+.left { padding: .55in .52in; display: flex; flex-direction: column; }
+.right { border-left: 2px solid #2b2e26; background: #181b15; padding: .55in .48in; display: flex; flex-direction: column; justify-content: center; }
+.kicker { color: #c9b98b; font-size: 17px; font-weight: 900; letter-spacing: 5px; margin-bottom: 26px; }
+h1 { font-size: 58px; line-height: 1.02; margin: 0 0 28px; letter-spacing: 0; max-width: 800px; }
+p { color: #aaa79d; font-size: 25px; line-height: 1.38; margin: 0; max-width: 780px; }
+.metric { margin-top: auto; width: 390px; border: 3px solid #8bd8a8; background: #18231b; padding: 26px 30px; }
+.metric.red { border-color: #f08ba0; background: #1d1618; }
+.metric strong { display: block; color: #f7f3e8; font-size: 58px; line-height: .9; margin-bottom: 12px; }
+.metric span { color: #aaa79d; font-size: 19px; line-height: 1.25; }
+.proof-title { color: #c9b98b; font-size: 18px; font-weight: 900; letter-spacing: 4px; margin-bottom: 22px; }
+.proof-item { border: 2px solid #3a3d32; background: #20231d; padding: 22px 24px; color: #f7f3e8; font-size: 25px; font-weight: 850; margin-bottom: 16px; }
+.proof-item:first-of-type { border-color: #8bd8a8; }
+.footer { color: #c9b98b; font-family: monospace; font-size: 15px; text-align: right; margin-top: 26px; }
 </style>
 </head>
 <body>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">DISBURSEGUARD</div>
-      <h1>Proof-Paid Treasury Firewall</h1>
-      <p>No proof, no payout. AI payout agents must buy, verify, sign, and ledger proof before company money can move.</p>
-      <div class="footer">1 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>x402-style paid proof gates</div><div>Gemini extraction</div><div>Vultr-backed ledger</div>
+    <main class="left">
+      <div class="kicker">01 / THESIS</div>
+      <h1>No proof. No payout.</h1>
+      <p>DisburseGuard is a proof-paid treasury firewall for AI payout agents. The agent must buy, verify, sign, and ledger proof before company money can move.</p>
+      <div class="metric ">
+        <strong>$0.39</strong>
+        <span>proof spend controls $50K in capital exposure</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">x402-style proof gates</div><div class="proof-item">Gemini extraction</div><div class="proof-item">Vultr Postgres ledger</div>
+      <div class="footer">1 / 7</div>
     </aside>
   </div>
 </section>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">PROBLEM</div>
-      <h1>Autonomous agents can move faster than treasury controls</h1>
-      <p>AI agents can parse invoices and trigger workflows, but most financial controls still rely on after-the-fact dashboards or human review queues.</p>
-      <div class="footer">2 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>Risk appears before audit</div><div>Summaries are not proof</div><div>Payment authorization needs an enforceable pre-payout gate</div>
+    <main class="left">
+      <div class="kicker">02 / WHY NOW</div>
+      <h1>AI agents are crossing from advice into authorization.</h1>
+      <p>Summaries are not proof. A payout agent needs a pre-payout enforcement layer, not another dashboard after the money is gone.</p>
+      <div class="metric ">
+        <strong>$75K</strong>
+        <span>sample payout request held before release</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">Risk appears before audit</div><div class="proof-item">Human queues do not scale</div><div class="proof-item">Treasury needs machine-verifiable clearance</div>
+      <div class="footer">2 / 7</div>
     </aside>
   </div>
 </section>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">SOLUTION</div>
-      <h1>Turn proof into a paid prerequisite</h1>
-      <p>The agent must request protected evidence endpoints, receive HTTP 402 payment metadata, buy proof receipts, and only then ask Policy Guard to decide.</p>
-      <div class="footer">3 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>Vendor-risk proof</div><div>Recipient-match proof</div><div>Sanctions-screen proof</div><div>Delivery-attestation proof</div>
+    <main class="left">
+      <div class="kicker">03 / PAID PROOF</div>
+      <h1>Evidence is protected by payment, not trust.</h1>
+      <p>Proof endpoints return HTTP 402 until the agent pays. Only paid receipts can enter the treasury policy decision.</p>
+      <div class="metric red">
+        <strong>402</strong>
+        <span>payment required before proof access</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">vendor-risk</div><div class="proof-item">recipient-match</div><div class="proof-item">sanctions-screen</div><div class="proof-item">delivery-attestation</div>
+      <div class="footer">3 / 7</div>
     </aside>
   </div>
 </section>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">AGENT FLOW</div>
-      <h1>Every payout becomes a verifiable clearance run</h1>
-      <p>Payout intent -&gt; Gemini extraction -&gt; proof plan -&gt; x402 proof gate -&gt; paid receipts -&gt; policy decision -&gt; signed ClearancePacket -&gt; ledger verification.</p>
-      <div class="footer">4 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>Agent acts, not just displays</div><div>Proof spend can stop after hard-risk signal</div><div>Receipts are hash-linked into the decision</div>
+    <main class="left">
+      <div class="kicker">04 / AGENT WORKFLOW</div>
+      <h1>The product is an acting agent, not a passive dashboard.</h1>
+      <p>Intake Agent extracts context, Proof Agent creates the plan, Payment Agent buys receipts, Policy Guard decides, and Audit Agent signs the packet.</p>
+      <div class="metric ">
+        <strong>5</strong>
+        <span>agents in one clearance loop</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">Payout intent</div><div class="proof-item">Proof plan</div><div class="proof-item">Paid receipts</div><div class="proof-item">Policy outcome</div><div class="proof-item">Signed packet</div>
+      <div class="footer">4 / 7</div>
     </aside>
   </div>
 </section>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">LIVE DEMO RESULT</div>
-      <h1>$0.39 of proof controls $50,000 of capital exposure</h1>
-      <p>In the high-value scenario, DisburseGuard caps a $75,000 request to $25,000, signs the packet with a production key, and verifies the event chain.</p>
-      <div class="footer">5 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>Requested: USD 75,000</div><div>Authorized: USD 25,000</div><div>Ledger: postgres-drizzle valid chain</div>
+    <main class="left">
+      <div class="kicker">05 / TREASURY DECISION</div>
+      <h1>Proof quality directly controls how much capital can move.</h1>
+      <p>In the live scenario, DisburseGuard limits a $75,000 payout to $25,000 and keeps $50,000 controlled until better proof arrives.</p>
+      <div class="metric ">
+        <strong>$25K</strong>
+        <span>authorized from a $75K request</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">CLEAR: verified release</div><div class="proof-item">LIMIT: capped payout</div><div class="proof-item">REVIEW: human queue</div><div class="proof-item">BLOCK: hard stop</div>
+      <div class="footer">5 / 7</div>
     </aside>
   </div>
 </section>
 <section class="slide">
   <div class="frame">
-    <div class="left">
-      <div class="kicker">WHY IT WINS</div>
-      <h1>A protocol-shaped product, not another dashboard</h1>
-      <p>DisburseGuard creates an economic enforcement loop for AI finance: spend cents on paid proof before releasing thousands in company funds.</p>
-      <div class="footer">6 / 6</div>
-    </div>
-    <aside class="proof">
-      <div>Strong x402 fit</div><div>B2B FinOps and compliance use case</div><div>Public Vultr deployment with verifiable APIs</div>
+    <main class="left">
+      <div class="kicker">06 / VERIFICATION</div>
+      <h1>Every clearance becomes independently verifiable.</h1>
+      <p>The ClearancePacket contains proof hashes, policy version, expiry, rationale, public key, and signature. The ledger chains every event hash.</p>
+      <div class="metric ">
+        <strong>valid</strong>
+        <span>packet signature and event chain</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">production-key signature</div><div class="proof-item">append-only event hashes</div><div class="proof-item">/api/clearance/:id/verify</div>
+      <div class="footer">6 / 7</div>
+    </aside>
+  </div>
+</section>
+<section class="slide">
+  <div class="frame">
+    <main class="left">
+      <div class="kicker">07 / WHY IT WINS</div>
+      <h1>A protocol-shaped product for autonomous finance.</h1>
+      <p>DisburseGuard aligns directly with x402 payments, Gemini, Vultr, B2B FinOps, compliance, and agentic workflows.</p>
+      <div class="metric ">
+        <strong>live</strong>
+        <span>public Vultr deployment</span>
+      </div>
+    </main>
+    <aside class="right">
+      <div class="proof-title">PROOF OBJECTS</div>
+      <div class="proof-item">x402: paid proof primitive</div><div class="proof-item">Gemini: extraction agent</div><div class="proof-item">Vultr: deployed ledger</div><div class="proof-item">FinOps: payout control</div>
+      <div class="footer">7 / 7</div>
     </aside>
   </div>
 </section>

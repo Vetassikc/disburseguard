@@ -32,7 +32,11 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function DemoClient() {
+type DemoClientProps = {
+  initialLedgerBackend: ClearanceRunRecord["ledgerBackend"];
+};
+
+export function DemoClient({ initialLedgerBackend }: DemoClientProps) {
   const [scenarioId, setScenarioId] = useState<ScenarioId>("limit");
   const [run, setRun] = useState<ClearanceRunRecord | null>(null);
   const [verification, setVerification] = useState<ClearanceVerification | null>(null);
@@ -133,7 +137,7 @@ export function DemoClient() {
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <span className="status-pill border-[var(--dg-forest)]/50 bg-[var(--dg-forest)]/15 text-[var(--dg-forest-bright)]">
-              {run?.ledgerBackend ?? "ledger-ready"}
+              {run?.ledgerBackend ?? initialLedgerBackend}
             </span>
             <Link className="control-button secondary" href="/ledger">
               <ShieldCheck size={16} />
