@@ -7,7 +7,8 @@
   <path d="M112 264H1488" stroke="#393A31" stroke-width="2"/>
   <path d="M940 104V796" stroke="#393A31" stroke-width="2"/>
   <text x="152" y="162" fill="#C9B98B" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="6">DISBURSEGUARD</text>
-  <text x="152" y="230" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="60" font-weight="700">Proof-Paid Treasury Firewall</text>
+  <text x="152" y="210" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">Proof-Paid Treasury</text>
+  <text x="152" y="256" fill="#F4F1E9" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700">Firewall</text>
   <text x="980" y="160" fill="#8BD8A8" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">No proof, no payout.</text>
   <text x="980" y="205" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="23">AI agents buy, verify, sign, and ledger proof</text>
   <text x="980" y="239" fill="#AAA79D" font-family="Arial, Helvetica, sans-serif" font-size="23">before company money can move.</text>

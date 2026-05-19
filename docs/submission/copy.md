@@ -24,9 +24,21 @@ Use `public/disburseguard-cover.svg` as a 16:9 cover asset. Export to PNG if the
 
 http://80.240.26.25/demo
 
+## GitHub Repository
+
+https://github.com/Vetassikc/disburseguard
+
 ## Ledger URL
 
 http://80.240.26.25/ledger
+
+## Cover Image PNG
+
+Use `artifacts/submission/disburseguard-cover.png` after running `node scripts/generate-submission-assets.mjs`.
+
+## Slide Presentation
+
+Use `artifacts/submission/disburseguard-slides.pdf` for lablab.ai and keep `artifacts/submission/disburseguard-slides.pptx` as the editable source.
 
 ## Video Script
 
