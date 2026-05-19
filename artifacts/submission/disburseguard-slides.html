@@ -6,150 +6,192 @@
 <style>
 @page { size: 16in 9in; margin: 0; }
 * { box-sizing: border-box; }
-body { margin: 0; background: #0b0c0a; font-family: Arial, Helvetica, sans-serif; color: #f7f3e8; }
-.slide { width: 16in; height: 9in; page-break-after: always; padding: .58in; background: #0b0c0a; }
-.frame { height: 100%; border: 2px solid #3a3d32; background: #12140f; display: grid; grid-template-columns: 1.55fr .95fr; }
-.left { padding: .55in .52in; display: flex; flex-direction: column; }
-.right { border-left: 2px solid #2b2e26; background: #181b15; padding: .55in .48in; display: flex; flex-direction: column; justify-content: center; }
-.kicker { color: #c9b98b; font-size: 17px; font-weight: 900; letter-spacing: 5px; margin-bottom: 26px; }
-h1 { font-size: 58px; line-height: 1.02; margin: 0 0 28px; letter-spacing: 0; max-width: 800px; }
-p { color: #aaa79d; font-size: 25px; line-height: 1.38; margin: 0; max-width: 780px; }
-.metric { margin-top: auto; width: 390px; border: 3px solid #8bd8a8; background: #18231b; padding: 26px 30px; }
-.metric.red { border-color: #f08ba0; background: #1d1618; }
-.metric strong { display: block; color: #f7f3e8; font-size: 58px; line-height: .9; margin-bottom: 12px; }
-.metric span { color: #aaa79d; font-size: 19px; line-height: 1.25; }
-.proof-title { color: #c9b98b; font-size: 18px; font-weight: 900; letter-spacing: 4px; margin-bottom: 22px; }
-.proof-item { border: 2px solid #3a3d32; background: #20231d; padding: 22px 24px; color: #f7f3e8; font-size: 25px; font-weight: 850; margin-bottom: 16px; }
-.proof-item:first-of-type { border-color: #8bd8a8; }
-.footer { color: #c9b98b; font-family: monospace; font-size: 15px; text-align: right; margin-top: 26px; }
+:root {
+  --ink: #111827;
+  --slate: #334155;
+  --muted: #64748B;
+  --porcelain: #F7F2E8;
+  --paper: #FFFBF2;
+  --cloud: #EEF4FF;
+  --line: #D8D2C4;
+  --cobalt: #245BFF;
+  --mint: #36C78A;
+  --amber: #FFB020;
+  --coral: #FF5C7A;
+  --plum: #6D4AFF;
+}
+body { margin: 0; background: var(--porcelain); font-family: Arial, Helvetica, sans-serif; color: var(--ink); }
+.slide { width: 16in; height: 9in; page-break-after: always; padding: .62in; background: var(--porcelain); position: relative; overflow: hidden; }
+.cover { padding: 0; }
+.cover img { width: 16in; height: 9in; display: block; }
+.wave { position: absolute; left: 0; right: 0; bottom: 0; height: 2.15in; background: #e9f0ff; clip-path: polygon(0 45%, 13% 30%, 27% 48%, 44% 25%, 63% 52%, 80% 33%, 100% 46%, 100% 100%, 0 100%); }
+.shell { position: relative; z-index: 1; height: 100%; border: 2px solid var(--line); border-radius: 34px; background: rgba(255,251,242,.88); padding: .54in; display: grid; grid-template-columns: 1.08fr .92fr; gap: .46in; }
+.slide:nth-child(3n) .shell { background: #fffaf0; }
+.slide:nth-child(4n) .shell { background: #f9fbff; }
+.kicker { color: var(--cobalt); font-size: 16px; font-weight: 900; letter-spacing: 4px; margin-bottom: 24px; text-transform: uppercase; }
+.coral .kicker { color: var(--coral); }
+.amber .kicker { color: #9a6500; }
+.mint .kicker { color: #087a4c; }
+.plum .kicker { color: var(--plum); }
+h1 { font-size: 54px; line-height: 1.03; margin: 0 0 24px; letter-spacing: 0; max-width: 760px; }
+p { color: var(--slate); font-size: 23px; line-height: 1.38; margin: 0; max-width: 740px; }
+.metric { margin-top: auto; width: 3.75in; border-radius: 28px; padding: 25px 30px; background: var(--ink); color: #fff; box-shadow: 0 18px 40px rgba(17,24,39,.14); }
+.metric strong { display: block; font-size: 61px; line-height: .92; margin-bottom: 10px; }
+.metric span { color: #dbeafe; font-size: 18px; line-height: 1.25; }
+.visual { align-self: stretch; border-radius: 34px; background: #fff; border: 2px solid var(--line); padding: .34in; box-shadow: 0 24px 54px rgba(17,24,39,.12); display: flex; flex-direction: column; justify-content: center; }
+.checkpoint { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; gap: 18px; margin-bottom: 28px; }
+.node { min-height: 108px; border-radius: 26px; border: 2px solid var(--line); padding: 18px 20px; background: #fffaf0; }
+.node small { display: block; color: var(--muted); font-size: 13px; font-weight: 900; letter-spacing: 2px; margin-bottom: 12px; text-transform: uppercase; }
+.node b { color: var(--ink); font-size: 30px; line-height: 1; }
+.gate { background: var(--ink); color: #fff; border-color: var(--coral); }
+.gate small, .gate b { color: #fff; }
+.approved { background: #e5fff3; border-color: var(--mint); }
+.proof-list { display: grid; gap: 13px; }
+.proof-item { border: 2px solid var(--line); border-radius: 20px; padding: 17px 19px; color: var(--ink); font-size: 20px; font-weight: 900; background: #f8fafc; }
+.proof-item:first-child { border-color: var(--cobalt); background: var(--cloud); }
+.chain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 24px; }
+.chain div { height: 70px; border-radius: 20px; color: #fff; background: var(--ink); display: grid; place-items: center; font-size: 16px; font-weight: 900; text-align: center; padding: 0 8px; }
+.chain div:nth-child(2) { background: var(--cobalt); }
+.chain div:nth-child(3) { background: var(--plum); }
+.chain div:nth-child(4) { background: #087a4c; }
+.footer { position: absolute; right: .78in; bottom: .76in; color: var(--muted); font-size: 14px; font-weight: 800; }
 </style>
 </head>
 <body>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
-      <div class="kicker">01 / THESIS</div>
-      <h1>No proof. No payout.</h1>
-      <p>DisburseGuard is a proof-paid treasury firewall for AI payout agents. The agent must buy, verify, sign, and ledger proof before company money can move.</p>
-      <div class="metric ">
-        <strong>$0.39</strong>
-        <span>proof spend controls $50K in capital exposure</span>
+<section class="slide cover"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwMCIgaGVpZ2h0PSI5MDAiIHZpZXdCb3g9IjAgMCAxNjAwIDkwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUgZGVzYyI+CiAgPHRpdGxlIGlkPSJ0aXRsZSI+RGlzYnVyc2VHdWFyZCBUcmVhc3VyeSBDaGVja3BvaW50IGNvdmVyPC90aXRsZT4KICA8ZGVzYyBpZD0iZGVzYyI+QSBicmlnaHQgZmludGVjaCBjb3ZlciBzaG93aW5nIGFuIEFJIHBheW91dCByZXF1ZXN0IHN0b3BwZWQgYXQgYSBwcm9vZiBjaGVja3BvaW50IGJlZm9yZSBtb25leSBjYW4gbW92ZS48L2Rlc2M+CiAgPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTAwIiBmaWxsPSIjRjdGMkU4Ii8+CiAgPHBhdGggZD0iTTAgNzE2QzIzMCA2MjYgNDE4IDcwOSA2NDAgNjUwQzg3MiA1ODggMTA0NCA0MzIgMTI2MiA0ODVDMTQyNCA1MjQgMTUxMCA2NTEgMTYwMCA2MTJWOTAwSDBWNzE2WiIgZmlsbD0iI0U5RjBGRiIvPgogIDxwYXRoIGQ9Ik0xMjggMTA1SDE0NzIiIHN0cm9rZT0iI0Q4RDJDNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHRleHQgeD0iMTI4IiB5PSI3NCIgZmlsbD0iIzExMTgyNyIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSI1Ij5ESVNCVVJTRUdVQVJEPC90ZXh0PgogIDx0ZXh0IHg9IjEyODAiIHk9Ijc0IiBmaWxsPSIjMzM0MTU1IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+QUkgQWdlbnQgT2x5bXBpY3M8L3RleHQ+CgogIDx0ZXh0IHg9IjEyOCIgeT0iMTg0IiBmaWxsPSIjMjQ1QkZGIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjQiPlBST09GLVBBSUQgVFJFQVNVUlkgRklSRVdBTEw8L3RleHQ+CiAgPHRleHQgeD0iMTI4IiB5PSIyODYiIGZpbGw9IiMxMTE4MjciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgyIiBmb250LXdlaWdodD0iOTAwIj5ObyBwcm9vZi48L3RleHQ+CiAgPHRleHQgeD0iMTI4IiB5PSIzNzYiIGZpbGw9IiMxMTE4MjciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgyIiBmb250LXdlaWdodD0iOTAwIj5ObyBwYXlvdXQuPC90ZXh0PgogIDx0ZXh0IHg9IjEzMiIgeT0iNDI4IiBmaWxsPSIjMzM0MTU1IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyOCI+QUkgcGF5b3V0IGFnZW50cyBtdXN0IGJ1eSBldmlkZW5jZSBiZWZvcmU8L3RleHQ+CiAgPHRleHQgeD0iMTMyIiB5PSI0NjYiIGZpbGw9IiMzMzQxNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI4Ij5jb21wYW55IG1vbmV5IGNhbiBtb3ZlLjwvdGV4dD4KCiAgPHJlY3QgeD0iMTI4IiB5PSI1NTIiIHdpZHRoPSIyMjgiIGhlaWdodD0iMTEwIiByeD0iMjgiIGZpbGw9IiNGRkZCRjIiIHN0cm9rZT0iI0Q4RDJDNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHRleHQgeD0iMTU4IiB5PSI1OTIiIGZpbGw9IiM2NDc0OEIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iMiI+UkVRVUVTVDwvdGV4dD4KICA8dGV4dCB4PSIxNTgiIHk9IjY0MSIgZmlsbD0iIzExMTgyNyIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNDUiIGZvbnQtd2VpZ2h0PSI5MDAiPiQ3NUs8L3RleHQ+CiAgPHJlY3QgeD0iMzg0IiB5PSI1NTIiIHdpZHRoPSIyMjgiIGhlaWdodD0iMTEwIiByeD0iMjgiIGZpbGw9IiNGRkYyQzgiIHN0cm9rZT0iI0ZGQjAyMCIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHRleHQgeD0iNDE0IiB5PSI1OTIiIGZpbGw9IiM5QTY1MDAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE2IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iMiI+UFJPT0YgU1BFTkQ8L3RleHQ+CiAgPHRleHQgeD0iNDE0IiB5PSI2NDEiIGZpbGw9IiMxMTE4MjciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ1IiBmb250LXdlaWdodD0iOTAwIj4kMC4zOTwvdGV4dD4KICA8cmVjdCB4PSIxMjgiIHk9IjY5MiIgd2lkdGg9IjQ4NCIgaGVpZ2h0PSI4OCIgcng9IjI4IiBmaWxsPSIjRTVGRkYzIiBzdHJva2U9IiMzNkM3OEEiIHN0cm9rZS13aWR0aD0iMyIvPgogIDx0ZXh0IHg9IjE1OCIgeT0iNzI4IiBmaWxsPSIjMDg3QTRDIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNSIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjIiPkNBUElUQUwgQ09OVFJPTExFRCBCRUZPUkUgUEFZT1VUPC90ZXh0PgogIDx0ZXh0IHg9IjE1OCIgeT0iNzY2IiBmaWxsPSIjMTExODI3IiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjkwMCI+JDUwSzwvdGV4dD4KICA8dGV4dCB4PSIyODIiIHk9Ijc2MiIgZmlsbD0iIzMzNDE1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI4MDAiPmhlbGQgYmVmb3JlIHBheW91dDwvdGV4dD4KCiAgPHJlY3QgeD0iNzYwIiB5PSIxNTAiIHdpZHRoPSI2OTIiIGhlaWdodD0iNDIyIiByeD0iNDIiIGZpbGw9IiNGRkZCRjIiIHN0cm9rZT0iIzExMTgyNyIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPHJlY3QgeD0iODA0IiB5PSIxOTQiIHdpZHRoPSI2MDQiIGhlaWdodD0iODYiIHJ4PSIyNiIgZmlsbD0iI0VFRjRGRiIgc3Ryb2tlPSIjQjdDOEZGIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSI4MzYiIHk9IjIzMCIgZmlsbD0iIzE3M0E5RSIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSIyIj5BSSBBR0VOVCBQQVlPVVQgUkVRVUVTVDwvdGV4dD4KICA8dGV4dCB4PSI4MzYiIHk9IjI2NCIgZmlsbD0iIzExMTgyNyIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjgiIGZvbnQtd2VpZ2h0PSI5MDAiPkhhcmR3YXJlIHJlc2VydmUgaW52b2ljZSAtICQ3NSwwMDA8L3RleHQ+CgogIDxwYXRoIGQ9Ik04NjYgMzcySDEwMjgiIHN0cm9rZT0iI0Q4RDJDNCIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTEwMjAgMzQ4TDEwNTAgMzcyTDEwMjAgMzk2IiBzdHJva2U9IiNEOEQyQzQiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0xMTgyIDM3MkgxMzIwIiBzdHJva2U9IiNEOEQyQzQiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0xMzEyIDM0OEwxMzQyIDM3MkwxMzEyIDM5NiIgc3Ryb2tlPSIjRDhEMkM0IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KCiAgPHJlY3QgeD0iODMwIiB5PSIzMjYiIHdpZHRoPSIxNTQiIGhlaWdodD0iOTYiIHJ4PSIyNCIgZmlsbD0iI0ZGRkZGRiIgc3Ryb2tlPSIjRDhEMkM0IiBzdHJva2Utd2lkdGg9IjIiLz4KICA8dGV4dCB4PSI4NTgiIHk9IjM2MiIgZmlsbD0iIzY0NzQ4QiIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI5MDAiIGxldHRlci1zcGFjaW5nPSIyIj5JTlRFTlQ8L3RleHQ+CiAgPHRleHQgeD0iODU4IiB5PSIzOTciIGZpbGw9IiMxMTE4MjciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMxIiBmb250LXdlaWdodD0iOTAwIj4kNzVLPC90ZXh0PgoKICA8cmVjdCB4PSIxMDM4IiB5PSIzMDAiIHdpZHRoPSIxNjgiIGhlaWdodD0iMTQ2IiByeD0iMzIiIGZpbGw9IiMxMTE4MjciIHN0cm9rZT0iI0ZGNUM3QSIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgPHRleHQgeD0iMTA3NCIgeT0iMzQwIiBmaWxsPSIjRkZGRkZGIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjkwMCIgbGV0dGVyLXNwYWNpbmc9IjIiPkhUVFAgNDAyPC90ZXh0PgogIDx0ZXh0IHg9IjEwNzQiIHk9IjM4MiIgZmlsbD0iI0ZGRkZGRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSI5MDAiPlByb29mPC90ZXh0PgogIDx0ZXh0IHg9IjEwNzQiIHk9IjQxOCIgZmlsbD0iI0ZGRkZGRiIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSI5MDAiPkdhdGU8L3RleHQ+CgogIDxyZWN0IHg9IjEzNDAiIHk9IjMyNiIgd2lkdGg9IjUyIiBoZWlnaHQ9Ijk2IiByeD0iMjYiIGZpbGw9IiMzNkM3OEEiLz4KICA8cmVjdCB4PSIxMjcwIiB5PSIzMjYiIHdpZHRoPSIxMjQiIGhlaWdodD0iOTYiIHJ4PSIyNCIgZmlsbD0iI0U1RkZGMyIgc3Ryb2tlPSIjMzZDNzhBIiBzdHJva2Utd2lkdGg9IjMiLz4KICA8dGV4dCB4PSIxMjk2IiB5PSIzNjIiIGZpbGw9IiMwODdBNEMiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iMiI+Q0xFQVJFRDwvdGV4dD4KICA8dGV4dCB4PSIxMjk2IiB5PSIzOTciIGZpbGw9IiMxMTE4MjciIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMxIiBmb250LXdlaWdodD0iOTAwIj4kMjVLPC90ZXh0PgoKICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgxMDc2IDQ4OCkgcm90YXRlKC04KSI+CiAgICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjEwIiBoZWlnaHQ9IjU0IiByeD0iMjciIGZpbGw9IiNGRkZGRkYiIHN0cm9rZT0iIzI0NUJGRiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgICA8dGV4dCB4PSIyNyIgeT0iMzYiIGZpbGw9IiMyNDVCRkYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iOTAwIiBsZXR0ZXItc3BhY2luZz0iMiI+UEFJRCBQUk9PRjwvdGV4dD4KICA8L2c+CgogIDxyZWN0IHg9IjgyMCIgeT0iNjI2IiB3aWR0aD0iNTk2IiBoZWlnaHQ9IjEyMCIgcng9IjM0IiBmaWxsPSIjMTExODI3Ii8+CiAgPHRleHQgeD0iODU4IiB5PSI2NzEiIGZpbGw9IiNGRkZGRkYiIGZvbnQtZmFtaWx5PSJBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI1IiBmb250LXdlaWdodD0iOTAwIj5TaWduZWQgQ2xlYXJhbmNlUGFja2V0ICsgVnVsdHIgbGVkZ2VyPC90ZXh0PgogIDxjaXJjbGUgY3g9Ijg3MiIgY3k9IjcxNiIgcj0iMTEiIGZpbGw9IiMyNDVCRkYiLz4KICA8bGluZSB4MT0iODgzIiB5MT0iNzE2IiB4Mj0iOTc4IiB5Mj0iNzE2IiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iLjYiLz4KICA8Y2lyY2xlIGN4PSIxMDAwIiBjeT0iNzE2IiByPSIxMSIgZmlsbD0iI0ZGQjAyMCIvPgogIDxsaW5lIHgxPSIxMDExIiB5MT0iNzE2IiB4Mj0iMTEwNiIgeTI9IjcxNiIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9Ii42Ii8+CiAgPGNpcmNsZSBjeD0iMTEyOCIgY3k9IjcxNiIgcj0iMTEiIGZpbGw9IiMzNkM3OEEiLz4KICA8bGluZSB4MT0iMTEzOSIgeTE9IjcxNiIgeDI9IjEyMzQiIHkyPSI3MTYiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIuNiIvPgogIDxjaXJjbGUgY3g9IjEyNTYiIGN5PSI3MTYiIHI9IjExIiBmaWxsPSIjRkY1QzdBIi8+CiAgPHRleHQgeD0iMTI5MCIgeT0iNzIzIiBmaWxsPSIjQkZEMEZGIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjgwMCI+dmVyaWZ5IEFQSTwvdGV4dD4KICA8dGV4dCB4PSIxMjgiIHk9IjgzNiIgZmlsbD0iIzMzNDE1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBIZWx2ZXRpY2EsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjEiIGZvbnQtd2VpZ2h0PSI4MDAiPkdlbWluaSBleHRyYWN0aW9uICsgeDQwMi1zdHlsZSBwcm9vZiBwYXltZW50cyArIGRldGVybWluaXN0aWMgcG9saWN5ICsgc2lnbmVkIGxlZGdlciB2ZXJpZmljYXRpb248L3RleHQ+Cjwvc3ZnPg==" alt="DisburseGuard Treasury Checkpoint cover" /></section>
+<section class="slide coral">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
+      <div class="kicker">02 / THE GAP</div>
+      <h1>Dashboards explain risk after money already left.</h1>
+      <p>Autonomous finance needs enforcement before payout, not a prettier audit view after the agent has acted.</p>
+      <div class="metric">
+        <strong>before</strong>
+        <span>control moves in front of the payout</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">x402-style proof gates</div><div class="proof-item">Gemini extraction</div><div class="proof-item">Vultr Postgres ledger</div>
-      <div class="footer">1 / 7</div>
+    <aside class="visual">
+      <div class="checkpoint">
+      <div class="node"><small>invoice</small><b>PDF</b></div>
+      <div class="node gate"><small>agent summary</small><b>looks safe</b></div>
+      <div class="node"><small>audit</small><b>too late</b></div>
+    </div>
+    <div class="proof-list"><div class="proof-item">Agent summaries are not evidence</div><div class="proof-item">Human queues do not scale</div><div class="proof-item">Treasury needs machine-verifiable proof</div></div>
     </aside>
   </div>
+  <div class="footer">2 / 7</div>
 </section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
-      <div class="kicker">02 / WHY NOW</div>
-      <h1>AI agents are crossing from advice into authorization.</h1>
-      <p>Summaries are not proof. A payout agent needs a pre-payout enforcement layer, not another dashboard after the money is gone.</p>
-      <div class="metric ">
-        <strong>$75K</strong>
-        <span>sample payout request held before release</span>
-      </div>
-    </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">Risk appears before audit</div><div class="proof-item">Human queues do not scale</div><div class="proof-item">Treasury needs machine-verifiable clearance</div>
-      <div class="footer">2 / 7</div>
-    </aside>
-  </div>
-</section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
+<section class="slide amber">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
       <div class="kicker">03 / PAID PROOF</div>
-      <h1>Evidence is protected by payment, not trust.</h1>
-      <p>Proof endpoints return HTTP 402 until the agent pays. Only paid receipts can enter the treasury policy decision.</p>
-      <div class="metric red">
+      <h1>Evidence is a paid gate, not a trusted checkbox.</h1>
+      <p>Protected proof endpoints deny access with HTTP 402. The Payment Agent must create receipts before evidence can influence the treasury decision.</p>
+      <div class="metric">
         <strong>402</strong>
         <span>payment required before proof access</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">vendor-risk</div><div class="proof-item">recipient-match</div><div class="proof-item">sanctions-screen</div><div class="proof-item">delivery-attestation</div>
-      <div class="footer">3 / 7</div>
+    <aside class="visual">
+      <div class="checkpoint">
+      <div class="node"><small>request</small><b>proof</b></div>
+      <div class="node gate"><small>HTTP</small><b>402</b></div>
+      <div class="node approved"><small>receipt</small><b>paid</b></div>
+    </div>
+    <div class="proof-list"><div class="proof-item">vendor-risk</div><div class="proof-item">recipient-match</div><div class="proof-item">sanctions-screen</div><div class="proof-item">delivery-attestation</div></div>
     </aside>
   </div>
+  <div class="footer">3 / 7</div>
 </section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
-      <div class="kicker">04 / AGENT WORKFLOW</div>
-      <h1>The product is an acting agent, not a passive dashboard.</h1>
-      <p>Intake Agent extracts context, Proof Agent creates the plan, Payment Agent buys receipts, Policy Guard decides, and Audit Agent signs the packet.</p>
-      <div class="metric ">
+<section class="slide plum">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
+      <div class="kicker">04 / AGENT LOOP</div>
+      <h1>The demo acts through a full clearance chain.</h1>
+      <p>Intake Agent, Proof Agent, Payment Agent, Policy Guard, and Audit Agent complete one verifiable payout loop instead of only displaying status.</p>
+      <div class="metric">
         <strong>5</strong>
-        <span>agents in one clearance loop</span>
+        <span>agents in the clearance loop</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">Payout intent</div><div class="proof-item">Proof plan</div><div class="proof-item">Paid receipts</div><div class="proof-item">Policy outcome</div><div class="proof-item">Signed packet</div>
-      <div class="footer">4 / 7</div>
+    <aside class="visual">
+      <div class="checkpoint">
+    <div class="node"><small>agent</small><b>acts</b></div>
+    <div class="node gate"><small>checkpoint</small><b>proof</b></div>
+    <div class="node approved"><small>treasury</small><b>safe</b></div>
+  </div>
+  <div class="proof-list"><div class="proof-item">Extract</div><div class="proof-item">Plan</div><div class="proof-item">Pay</div><div class="proof-item">Decide</div><div class="proof-item">Sign and ledger</div></div>
     </aside>
   </div>
+  <div class="footer">4 / 7</div>
 </section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
-      <div class="kicker">05 / TREASURY DECISION</div>
-      <h1>Proof quality directly controls how much capital can move.</h1>
-      <p>In the live scenario, DisburseGuard limits a $75,000 payout to $25,000 and keeps $50,000 controlled until better proof arrives.</p>
-      <div class="metric ">
-        <strong>$25K</strong>
-        <span>authorized from a $75K request</span>
+<section class="slide mint">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
+      <div class="kicker">05 / LIVE RESULT</div>
+      <h1>$0.39 of proof spend controls $50K of exposure.</h1>
+      <p>In the high-value reserve scenario, DisburseGuard limits a $75,000 request to $25,000 and keeps the remaining $50,000 blocked until stronger proof arrives.</p>
+      <div class="metric">
+        <strong>$50K</strong>
+        <span>capital controlled before payout</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">CLEAR: verified release</div><div class="proof-item">LIMIT: capped payout</div><div class="proof-item">REVIEW: human queue</div><div class="proof-item">BLOCK: hard stop</div>
-      <div class="footer">5 / 7</div>
+    <aside class="visual">
+      <div class="checkpoint">
+      <div class="node"><small>requested</small><b>$75K</b></div>
+      <div class="node approved"><small>approved</small><b>$25K</b></div>
+      <div class="node gate"><small>held</small><b>$50K</b></div>
+    </div>
+    <div class="proof-list"><div class="proof-item">requested: $75K</div><div class="proof-item">proof spend: $0.39</div><div class="proof-item">approved: $25K</div><div class="proof-item">held: $50K</div></div>
     </aside>
   </div>
+  <div class="footer">5 / 7</div>
 </section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
-      <div class="kicker">06 / VERIFICATION</div>
-      <h1>Every clearance becomes independently verifiable.</h1>
-      <p>The ClearancePacket contains proof hashes, policy version, expiry, rationale, public key, and signature. The ledger chains every event hash.</p>
-      <div class="metric ">
+<section class="slide cobalt">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
+      <div class="kicker">06 / VERIFIABLE LEDGER</div>
+      <h1>Every decision becomes a public verification object.</h1>
+      <p>The ClearancePacket carries proof hashes, policy version, expiry, rationale, public key, and signature. The Vultr Postgres ledger chains every event hash.</p>
+      <div class="metric">
         <strong>valid</strong>
         <span>packet signature and event chain</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">production-key signature</div><div class="proof-item">append-only event hashes</div><div class="proof-item">/api/clearance/:id/verify</div>
-      <div class="footer">6 / 7</div>
+    <aside class="visual">
+      <div class="chain"><div>intent</div><div>proof</div><div>packet</div><div>verify</div></div>
+    <div class="proof-list" style="margin-top:28px;"><div class="proof-item">production-key signing mode</div><div class="proof-item">append-only event hashes</div><div class="proof-item">/api/clearance/:id/verify</div></div>
     </aside>
   </div>
+  <div class="footer">6 / 7</div>
 </section>
-<section class="slide">
-  <div class="frame">
-    <main class="left">
+<section class="slide plum">
+  <div class="wave"></div>
+  <div class="shell">
+    <main style="display:flex;flex-direction:column;">
       <div class="kicker">07 / WHY IT WINS</div>
-      <h1>A protocol-shaped product for autonomous finance.</h1>
-      <p>DisburseGuard aligns directly with x402 payments, Gemini, Vultr, B2B FinOps, compliance, and agentic workflows.</p>
-      <div class="metric ">
+      <h1>A payment primitive for agentic finance, not a generic dashboard.</h1>
+      <p>DisburseGuard aligns the strongest hackathon surfaces: x402 paid proof gates, Gemini extraction, Vultr deployment, B2B FinOps, compliance, and a multi-step agent workflow.</p>
+      <div class="metric">
         <strong>live</strong>
         <span>public Vultr deployment</span>
       </div>
     </main>
-    <aside class="right">
-      <div class="proof-title">PROOF OBJECTS</div>
-      <div class="proof-item">x402: paid proof primitive</div><div class="proof-item">Gemini: extraction agent</div><div class="proof-item">Vultr: deployed ledger</div><div class="proof-item">FinOps: payout control</div>
-      <div class="footer">7 / 7</div>
+    <aside class="visual">
+      <div class="checkpoint">
+    <div class="node"><small>agent</small><b>acts</b></div>
+    <div class="node gate"><small>checkpoint</small><b>proof</b></div>
+    <div class="node approved"><small>treasury</small><b>safe</b></div>
+  </div>
+  <div class="proof-list"><div class="proof-item">x402: proof purchase primitive</div><div class="proof-item">Gemini: structured intake</div><div class="proof-item">Vultr: deployed ledger</div><div class="proof-item">FinOps: payout control</div></div>
     </aside>
   </div>
+  <div class="footer">7 / 7</div>
 </section>
 </body>
 </html>
