@@ -52,6 +52,7 @@ git archive --format=tar HEAD > "$TMP_DIR/disburseguard.tar"
 
 cat > "$TMP_DIR/production.env" <<EOF
 POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+DATABASE_URL=postgres://disburseguard:$POSTGRES_PASSWORD@postgres:5432/disburseguard
 GEMINI_MODE=$GEMINI_MODE
 GEMINI_API_KEY=${GEMINI_API_KEY:-}
 GEMINI_MODEL=$GEMINI_MODEL
